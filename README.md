@@ -1,44 +1,116 @@
 # Nexus
 
-[![CI](https://github.com/nexus-ipc/nexus/actions/workflows/ci.yml/badge.svg)](https://github.com/nexus-ipc/nexus/actions/workflows/ci.yml)
-[![Security](https://github.com/nexus-ipc/nexus/actions/workflows/security.yml/badge.svg)](https://github.com/nexus-ipc/nexus/actions/workflows/security.yml)
+[![CI](https://github.com/sharb1235-hash/nexus/actions/workflows/ci.yml/badge.svg)](https://github.com/sharb1235-hash/nexus/actions/workflows/ci.yml)
+[![Security](https://github.com/sharb1235-hash/nexus/actions/workflows/security.yml/badge.svg)](https://github.com/sharb1235-hash/nexus/actions/workflows/security.yml)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 
 **A local coordination daemon and Git-like state ledger for polyglot AI agents.**
 
-Not another agent framework — the shared state substrate underneath them.
+Not another agent framework - the shared state substrate underneath them.
 
 Nexus-IPC is a local coordination daemon for polyglot AI agents. NexusLedger is the Git-like state history built on top of it. Nexus Console is the live debugger and dashboard. Together, they let agents share state in real time while giving developers replay, rollback, diffing, loop detection, and debugging for every important state transition.
 
 ## 60-Second Quickstart
 
+These commands are written for Windows PowerShell. They use `curl.exe`, `py`, `py -m pip`, and `npm.cmd` to avoid common PATH and PowerShell execution-policy issues.
+
+Terminal 1 - keep this running:
+
+```powershell
+cd <repo>
+docker compose up --build
+```
+
+Terminal 2 - verify the daemon/API and run the demo:
+
+```powershell
+cd <repo>
+curl.exe http://127.0.0.1:7822/api/health
+curl.exe http://127.0.0.1:7823/metrics
+cd sdks\python
+py -m pip install -e .
+cd ..\..
+py examples\python-basic\main.py
+cargo run -p nexus -- status
+cargo run -p nexus -- agents
+cargo run -p nexus -- channels
+cargo run -p nexus -- log --run demo-run
+```
+
+Terminal 3 - run Nexus Console in Vite dev mode:
+
+```powershell
+cd <repo>\dashboard
+npm.cmd install
+npm.cmd run dev
+```
+
+Browser:
+
+Open the Vite URL printed by `npm.cmd run dev`. It is usually `http://127.0.0.1:5173` or `http://127.0.0.1:5174` if 5173 is already in use.
+
+For macOS/Linux, the equivalent flow is:
+
 ```bash
-git clone https://github.com/nexus-ipc/nexus.git
-cd nexus
-cargo build --workspace
-NEXUS_REQUIRE_AUTH=false cargo run -p nexus -- daemon start
+cd <repo>
+docker compose up --build
 ```
 
 In another terminal:
 
 ```bash
+cd <repo>
+curl http://127.0.0.1:7822/api/health
+curl http://127.0.0.1:7823/metrics
 cd sdks/python
-pip install -e .
-cd ../../
-python examples/python-basic/main.py
+python3 -m pip install -e .
+cd ../..
+python3 examples/python-basic/main.py
+cargo run -p nexus -- status
+cargo run -p nexus -- agents
+cargo run -p nexus -- channels
+cargo run -p nexus -- log --run demo-run
 ```
 
-Then inspect the run:
+And for the dashboard:
 
 ```bash
-nexus agents
-nexus channels
-nexus log --run demo-run
-nexus replay <commit_id>
-nexus diff <commit_a> <commit_b>
+cd <repo>/dashboard
+npm install
+npm run dev
 ```
 
-Open Nexus Console at [http://127.0.0.1:7822](http://127.0.0.1:7822) when running with the local HTTP API.
+## Local Endpoints
+
+Docker Compose starts the Nexus daemon, HTTP API, and metrics endpoint. It does not currently serve the production React dashboard at `/`.
+
+- API health: [http://127.0.0.1:7822/api/health](http://127.0.0.1:7822/api/health)
+- Metrics: [http://127.0.0.1:7823/metrics](http://127.0.0.1:7823/metrics)
+- Dashboard dev server: the URL printed by Vite from `dashboard/`, usually `http://127.0.0.1:5173` or `http://127.0.0.1:5174`
+
+## What Works Today
+
+- [x] Local daemon/API.
+- [x] Metrics endpoint.
+- [x] Docker Compose daemon run.
+- [x] Python SDK editable install.
+- [x] Python demo with two agents.
+- [x] Durable commits.
+- [x] CLI `status`, `agents`, `channels`, and `log`.
+- [x] Dashboard dev UI.
+- [x] Basic commit display.
+- [x] Basic metrics display.
+
+## What Is Experimental
+
+- Dashboard serving is separate in dev mode.
+- The Docker image currently runs the daemon/API, not a bundled production dashboard.
+- Framework adapters are early and should use public hooks, callbacks, middleware, checkpointers, or explicit wrappers.
+- The MCP bridge is optional and experimental where enabled.
+- Local cluster mode is experimental where present.
+- APIs may change before v1.0.
+- Security hardening is local-first/dev-first; remote use needs a deployment-specific review.
+- Cloud and team features are roadmap only.
 
 ## Architecture
 
@@ -66,15 +138,25 @@ flowchart LR
 
 ## Why Nexus Exists
 
-Agent frameworks are good at orchestration inside one application. Real systems often have multiple agents, languages, runtimes, and tools. Nexus provides the shared local substrate beneath agent frameworks so they can coordinate through versioned protocol messages and durable logical agent state.
+Agent frameworks are good at orchestration inside one application. Real systems often have multiple agents, languages, runtimes, local processes, and tools. Nexus provides the shared local substrate beneath agent frameworks so they can coordinate through versioned protocol messages and durable logical agent state.
+
+## Why Not Just LangGraph Memory?
+
+LangGraph memory and checkpointing are excellent for LangGraph applications. Nexus is not trying to replace framework-native memory, persistence, or orchestration.
+
+Nexus is useful when logical agent state spans multiple frameworks, languages, runtimes, local processes, tools, or custom workers. It acts as a neutral local state bus plus Git-like ledger underneath agent frameworks, so LangGraph, CrewAI, AutoGen, Microsoft Agent Framework, custom Python workers, TypeScript services, and other processes can coordinate without all adopting the same application framework.
+
+The intended relationship is complementary: keep using the framework-native memory that works best inside each app, and use Nexus when shared structured state deltas, durable commits, cross-process observability, diffing, replay, and rollback of captured logical state need to cross framework boundaries.
 
 ## Install
 
-Docker:
+Docker daemon/API and metrics:
 
 ```bash
 docker compose up --build
 ```
+
+Docker exposes the HTTP API at `http://127.0.0.1:7822` and metrics at `http://127.0.0.1:7823`. The React dashboard is run separately from `dashboard/` during development.
 
 Cargo:
 
@@ -86,7 +168,7 @@ cargo install --path cli --bin nexus
 Python:
 
 ```bash
-pip install nexus-ipc
+py -m pip install nexus-ipc
 ```
 
 TypeScript:
@@ -146,13 +228,19 @@ console.log(commit.commitId);
 
 ![Nexus Console smoke test](docs/nexus-console-smoke.png)
 
-The console is a Vite/React app in `dashboard/`. During development:
+The console is a Vite/React app in `dashboard/`. During development on Windows PowerShell:
 
-```bash
+```powershell
 cd dashboard
-npm install
-npm run dev
+npm.cmd install
+npm.cmd run dev
 ```
+
+Open the URL printed by Vite. If port 5173 is already in use, Vite may choose another port such as 5174.
+
+## Demo Assets
+
+The public launch demo should be recorded before the repo is made public. Use [docs/assets/nexus-demo.mp4](docs/assets/nexus-demo.mp4) and/or [docs/assets/nexus-demo.gif](docs/assets/nexus-demo.gif) for the final recording. The shot list lives in [docs/assets/README.md](docs/assets/README.md).
 
 ## Security Model
 
@@ -203,6 +291,10 @@ The benchmark reports p50/p95/p99 publish latency, durable checkpoint latency sa
 7. A repeated tool failure triggers a loop warning.
 8. A developer diffs the bad commit against the last stable commit.
 9. A developer forks from the stable commit and resumes from corrected state.
+
+## Public Launch
+
+Keep the GitHub repository private until CI is green. Use [docs/public-launch-checklist.md](docs/public-launch-checklist.md) and [docs/clean-clone-test.md](docs/clean-clone-test.md) before switching visibility to public.
 
 ## Cloud Roadmap
 

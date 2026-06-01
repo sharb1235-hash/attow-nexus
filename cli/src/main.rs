@@ -149,7 +149,7 @@ async fn main() -> anyhow::Result<()> {
             }
         },
         Command::Status => print(HttpClient::from_env().get("/api/health").await?, cli.json),
-        Command::Agents => print(HttpClient::from_env().get("/api/agents").await?, cli.json),
+        Command::Agents => agents(cli.json).await,
         Command::Channels { command } => match command {
             Some(ChannelsCommand::Inspect { channel }) => {
                 let encoded = urlencoding::encode(&channel);
@@ -240,6 +240,29 @@ async fn init(json_output: bool) -> anyhow::Result<()> {
         "message": "Nexus local data directory is ready"
     });
     print(value, json_output)
+}
+
+async fn agents(json_output: bool) -> anyhow::Result<()> {
+    let value = HttpClient::from_env().get("/api/agents").await?;
+    print(rename_agent_last_seen(value), json_output)
+}
+
+fn rename_agent_last_seen(value: Value) -> Value {
+    match value {
+        Value::Array(items) => Value::Array(
+            items
+                .into_iter()
+                .map(rename_agent_last_seen)
+                .collect::<Vec<_>>(),
+        ),
+        Value::Object(mut map) => {
+            if let Some(last_seen) = map.remove("last_seen_seconds") {
+                map.insert("last_seen_unix_seconds".to_string(), last_seen);
+            }
+            Value::Object(map)
+        }
+        other => other,
+    }
 }
 
 async fn publish(args: PublishArgs, json_output: bool) -> anyhow::Result<()> {
