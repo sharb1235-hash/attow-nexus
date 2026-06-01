@@ -1,0 +1,17 @@
+/target/
+**/target/
+**/node_modules/
+**/dist/
+**/.pytest_cache/
+**/__pycache__/
+**/*.pyc
+**/.ruff_cache/
+**/.mypy_cache/
+**/.venv/
+.env
+.DS_Store
+*.log
+.nexus/
+nexus.sqlite*
+coverage/
+

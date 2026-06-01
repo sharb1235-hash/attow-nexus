@@ -1,0 +1,121 @@
+syntax = "proto3";
+
+package nexus.v1;
+
+import "google/protobuf/struct.proto";
+
+// Field numbers are append-only. Deleted fields and enum values must be reserved
+// before removal so Buf can detect breaking changes.
+
+message AgentId {
+  string value = 1;
+  reserved 100 to 199;
+}
+
+message RunId {
+  string value = 1;
+  reserved 100 to 199;
+}
+
+message ThreadId {
+  string value = 1;
+  reserved 100 to 199;
+}
+
+message ChannelName {
+  string value = 1;
+  reserved 100 to 199;
+}
+
+message DeltaId {
+  string value = 1;
+  reserved 100 to 199;
+}
+
+message CommitId {
+  string value = 1;
+  reserved 100 to 199;
+}
+
+message ArtifactId {
+  string value = 1;
+  reserved 100 to 199;
+}
+
+message Timestamp {
+  int64 seconds = 1;
+  int32 nanos = 2;
+  reserved 100 to 199;
+}
+
+message KeyValue {
+  string key = 1;
+  string value = 2;
+  reserved 100 to 199;
+}
+
+message Metadata {
+  repeated KeyValue entries = 1;
+  reserved 100 to 199;
+}
+
+message Error {
+  string code = 1;
+  string message = 2;
+  bool retryable = 3;
+  Metadata metadata = 4;
+  reserved 100 to 199;
+}
+
+message PageRequest {
+  uint32 page_size = 1;
+  string page_token = 2;
+  reserved 100 to 199;
+}
+
+message PageResponse {
+  string next_page_token = 1;
+  uint64 total_size = 2;
+  reserved 100 to 199;
+}
+
+enum PayloadEncoding {
+  PAYLOAD_ENCODING_UNSPECIFIED = 0;
+  PAYLOAD_ENCODING_PROTOBUF_STRUCT = 1;
+  PAYLOAD_ENCODING_JSON = 2;
+  PAYLOAD_ENCODING_MSGPACK = 3;
+  PAYLOAD_ENCODING_CBOR = 4;
+  PAYLOAD_ENCODING_TEXT = 5;
+  PAYLOAD_ENCODING_BYTES = 6;
+  reserved 100 to 199;
+}
+
+message Payload {
+  PayloadEncoding encoding = 1;
+  bytes data = 2;
+  optional google.protobuf.Struct struct_data = 3;
+  uint64 size_bytes = 4;
+  string content_hash = 5;
+  bool compressed = 6;
+  string artifact_ref = 7;
+  reserved 100 to 199;
+}
+
+message RedactionFinding {
+  string field_path = 1;
+  string redaction_type = 2;
+  string replacement_marker = 3;
+  reserved 100 to 199;
+}
+
+message RedactionReport {
+  repeated RedactionFinding findings = 1;
+  bool redacted = 2;
+  reserved 100 to 199;
+}
+
+message PermissionScope {
+  string value = 1;
+  reserved 100 to 199;
+}
+

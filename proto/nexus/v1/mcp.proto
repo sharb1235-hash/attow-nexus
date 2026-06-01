@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package nexus.v1;
+
+import "nexus/v1/common.proto";
+
+message McpToolRequest {
+  string tool_name = 1;
+  Metadata arguments = 2;
+  reserved 100 to 199;
+}
+
+message McpToolResponse {
+  bool ok = 1;
+  Payload payload = 2;
+  Error error = 3;
+  reserved 100 to 199;
+}
+
+message McpResourceRequest {
+  string uri = 1;
+  reserved 100 to 199;
+}
+
+message McpResourceResponse {
+  string uri = 1;
+  Payload payload = 2;
+  reserved 100 to 199;
+}
+
+message McpBridgeInfo {
+  repeated string tools = 1;
+  repeated string resources = 2;
+  bool local_only = 3;
+  reserved 100 to 199;
+}
+

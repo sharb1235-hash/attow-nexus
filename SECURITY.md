@@ -1,0 +1,22 @@
+# Security Policy
+
+## Supported Versions
+
+Security updates are provided for the latest minor release. During the pre-1.0 period, upgrade to the newest available release before reporting whether an issue still reproduces.
+
+## Reporting a Vulnerability
+
+Report vulnerabilities to `security@example.com`. Include the affected version, operating system, reproduction steps, and whether a secret or external side effect was involved.
+
+## Local-Only Defaults
+
+Nexus is designed for local-first operation. The daemon rejects non-loopback TCP binds unless `NEXUS_ALLOW_REMOTE=true`. TCP mode requires a bearer token by default.
+
+## Secret Redaction
+
+SDKs and the daemon redact common secrets before payloads are sent, broadcast, or persisted. Detection covers API keys, bearer tokens, private keys, PEM blocks, AWS access keys, GitHub tokens, OpenAI-style keys, Anthropic-style keys, JWTs, database URLs with passwords, and generic secret key names.
+
+## Remote Bind Risks
+
+Remote binding can expose captured context and ledger history. Use token management, least-privilege scopes, network controls, and deployment-specific monitoring before enabling it.
+

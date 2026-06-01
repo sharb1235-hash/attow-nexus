@@ -1,0 +1,1 @@
+pub const DEFAULT_SUBSCRIPTION_QUEUE: usize = 1024;

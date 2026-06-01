@@ -1,0 +1,180 @@
+syntax = "proto3";
+
+package nexus.v1;
+
+import "nexus/v1/common.proto";
+import "nexus/v1/ledger.proto";
+
+message AgentMetadata {
+  string framework = 1;
+  string language = 2;
+  Metadata metadata = 3;
+  reserved 100 to 199;
+}
+
+message AgentCapabilities {
+  repeated string capabilities = 1;
+  reserved 100 to 199;
+}
+
+message RegisterAgentRequest {
+  string agent_id = 1;
+  string run_id = 2;
+  string thread_id = 3;
+  AgentMetadata metadata = 4;
+  AgentCapabilities capabilities = 5;
+  repeated PermissionScope requested_scopes = 6;
+  reserved 100 to 199;
+}
+
+message RegisterAgentResponse {
+  bool accepted = 1;
+  string agent_id = 2;
+  repeated PermissionScope granted_scopes = 3;
+  string protocol_version = 4;
+  reserved 100 to 199;
+}
+
+message AgentPresence {
+  string agent_id = 1;
+  string run_id = 2;
+  string thread_id = 3;
+  string status = 4;
+  Timestamp last_seen = 5;
+  AgentMetadata metadata = 6;
+  AgentCapabilities capabilities = 7;
+  repeated string active_channels = 8;
+  reserved 100 to 199;
+}
+
+message Heartbeat {
+  string agent_id = 1;
+  string run_id = 2;
+  Timestamp at = 3;
+  reserved 100 to 199;
+}
+
+message StateDelta {
+  string delta_id = 1;
+  string channel = 2;
+  string agent_id = 3;
+  string run_id = 4;
+  string thread_id = 5;
+  uint64 logical_clock = 6;
+  Timestamp wall_time = 7;
+  Payload payload = 8;
+  bool durable = 9;
+  repeated string tags = 10;
+  string summary = 11;
+  Metadata metadata = 12;
+  reserved 100 to 199;
+}
+
+message PublishDeltaRequest {
+  StateDelta delta = 1;
+  repeated string parent_commit_ids = 2;
+  string objective = 3;
+  reserved 100 to 199;
+}
+
+message PublishDeltaResponse {
+  string delta_id = 1;
+  string commit_id = 2;
+  bool accepted = 3;
+  bool persisted = 4;
+  string warning = 5;
+  RedactionReport redaction_report = 6;
+  reserved 100 to 199;
+}
+
+message SubscriptionFilter {
+  repeated string channel_patterns = 1;
+  bool durable_only = 2;
+  repeated string tags = 3;
+  reserved 100 to 199;
+}
+
+message SubscribeRequest {
+  string subscriber_id = 1;
+  SubscriptionFilter filter = 2;
+  uint32 queue_capacity = 3;
+  reserved 100 to 199;
+}
+
+message BroadcastDelta {
+  StateDelta delta = 1;
+  string commit_id = 2;
+  bool redacted = 3;
+  reserved 100 to 199;
+}
+
+message ChannelSnapshotRequest {
+  string channel = 1;
+  reserved 100 to 199;
+}
+
+message ChannelSnapshotResponse {
+  string channel = 1;
+  Payload latest_payload = 2;
+  uint64 durable_count = 3;
+  uint64 ephemeral_count = 4;
+  reserved 100 to 199;
+}
+
+message BackpressureSignal {
+  string subscriber_id = 1;
+  string channel = 2;
+  string policy = 3;
+  uint64 dropped_count = 4;
+  string message = 5;
+  reserved 100 to 199;
+}
+
+message Ack {
+  string id = 1;
+  string message = 2;
+  reserved 100 to 199;
+}
+
+message CheckpointNotice {
+  string commit_id = 1;
+  string delta_id = 2;
+  reserved 100 to 199;
+}
+
+message RollbackNotice {
+  string previous_head_commit_id = 1;
+  string new_head_commit_id = 2;
+  repeated string warnings = 3;
+  reserved 100 to 199;
+}
+
+message ClientEvent {
+  oneof event {
+    Heartbeat heartbeat = 1;
+    PublishDeltaRequest publish_delta = 2;
+    SubscribeRequest subscribe = 3;
+    string unsubscribe = 4;
+    PublishDeltaRequest checkpoint = 5;
+    ToolCall record_tool_started = 6;
+    ToolResult record_tool_finished = 7;
+    ExternalSideEffect record_side_effect = 8;
+    string shutdown = 9;
+  }
+  reserved 100 to 199;
+}
+
+message ServerEvent {
+  oneof event {
+    Ack ack = 1;
+    RegisterAgentResponse registered = 2;
+    BroadcastDelta broadcast_delta = 3;
+    CheckpointNotice checkpoint_committed = 4;
+    LoopWarning loop_warning = 5;
+    RollbackNotice rollback_notice = 6;
+    BackpressureSignal backpressure = 7;
+    Error error = 8;
+  }
+  reserved 100 to 199;
+}
+

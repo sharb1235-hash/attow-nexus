@@ -1,0 +1,16 @@
+[workspace]
+members = ["daemon", "cli"]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+authors = ["Nexus Contributors"]
+repository = "https://github.com/nexus-ipc/nexus"
+homepage = "https://github.com/nexus-ipc/nexus"
+description = "A local coordination daemon and Git-like state ledger for polyglot AI agents."
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+

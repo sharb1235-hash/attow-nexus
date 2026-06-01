@@ -1,0 +1,226 @@
+syntax = "proto3";
+
+package nexus.v1;
+
+import "nexus/v1/common.proto";
+
+enum LoopSeverity {
+  LOOP_SEVERITY_UNSPECIFIED = 0;
+  LOOP_SEVERITY_LOW = 1;
+  LOOP_SEVERITY_MEDIUM = 2;
+  LOOP_SEVERITY_HIGH = 3;
+  reserved 100 to 199;
+}
+
+enum ReplayMode {
+  REPLAY_MODE_UNSPECIFIED = 0;
+  REPLAY_MODE_STATE_ONLY = 1;
+  REPLAY_MODE_DRY_RUN_TOOLS = 2;
+  REPLAY_MODE_REEXECUTE_TOOLS = 3;
+  reserved 100 to 199;
+}
+
+message CommitParent {
+  string commit_id = 1;
+  string relationship = 2;
+  reserved 100 to 199;
+}
+
+message ToolCall {
+  string tool_call_id = 1;
+  string name = 2;
+  Payload input = 3;
+  Timestamp started_at = 4;
+  Metadata metadata = 5;
+  reserved 100 to 199;
+}
+
+message ToolResult {
+  string tool_call_id = 1;
+  Payload output = 2;
+  Error error = 3;
+  Timestamp finished_at = 4;
+  Metadata metadata = 5;
+  reserved 100 to 199;
+}
+
+message ArtifactRef {
+  string artifact_id = 1;
+  string content_hash = 2;
+  uint64 size_bytes = 3;
+  string media_type = 4;
+  bool compressed = 5;
+  Metadata metadata = 6;
+  reserved 100 to 199;
+}
+
+message ExternalSideEffect {
+  string side_effect_id = 1;
+  string kind = 2;
+  string description = 3;
+  string target = 4;
+  string payload_summary = 5;
+  Timestamp occurred_at = 6;
+  bool reversible = 7;
+  bool compensating_action_available = 8;
+  Metadata metadata = 9;
+  reserved 100 to 199;
+}
+
+message Commit {
+  string commit_id = 1;
+  string delta_id = 2;
+  string run_id = 3;
+  string thread_id = 4;
+  string agent_id = 5;
+  string channel = 6;
+  repeated string parent_commit_ids = 7;
+  uint64 logical_clock = 8;
+  Timestamp wall_time = 9;
+  string objective = 10;
+  Payload state_delta = 11;
+  Payload messages_delta = 12;
+  repeated ToolCall tool_calls = 13;
+  repeated ToolResult tool_results = 14;
+  repeated ArtifactRef artifact_refs = 15;
+  repeated ExternalSideEffect external_side_effects = 16;
+  string summary = 17;
+  repeated string tags = 18;
+  Metadata metadata = 19;
+  uint32 schema_version = 20;
+  string sdk_name = 21;
+  string sdk_version = 22;
+  string content_hash = 23;
+  repeated string previous_hashes = 24;
+  RedactionReport redaction_report = 25;
+  reserved 100 to 199;
+}
+
+message DiffEntry {
+  string path = 1;
+  string change_type = 2;
+  string before_json = 3;
+  string after_json = 4;
+  reserved 100 to 199;
+}
+
+message CommitDiff {
+  string from_commit_id = 1;
+  string to_commit_id = 2;
+  repeated DiffEntry entries = 3;
+  string human_summary = 4;
+  reserved 100 to 199;
+}
+
+message LoopWarning {
+  string warning_id = 1;
+  string run_id = 2;
+  string agent_id = 3;
+  string channel = 4;
+  LoopSeverity severity = 5;
+  string fingerprint = 6;
+  uint64 repetition_count = 7;
+  Timestamp first_seen = 8;
+  Timestamp last_seen = 9;
+  string suggested_stable_commit_id = 10;
+  string message = 11;
+  reserved 100 to 199;
+}
+
+message ReplayRequest {
+  string commit_id = 1;
+  ReplayMode mode = 2;
+  bool confirm_reexecute_tools = 3;
+  reserved 100 to 199;
+}
+
+message ReplayResult {
+  string commit_id = 1;
+  Payload reconstructed_state = 2;
+  repeated Payload messages = 3;
+  repeated ToolResult tool_outputs = 4;
+  repeated ArtifactRef artifacts = 5;
+  repeated string side_effect_warnings = 6;
+  repeated string provenance_commit_ids = 7;
+  repeated string missing_artifact_warnings = 8;
+  reserved 100 to 199;
+}
+
+message ForkRequest {
+  string source_commit_id = 1;
+  string new_run_id = 2;
+  Metadata metadata = 3;
+  reserved 100 to 199;
+}
+
+message ForkResult {
+  string source_commit_id = 1;
+  string run_id = 2;
+  string head_commit_id = 3;
+  reserved 100 to 199;
+}
+
+message RollbackRequest {
+  string head_commit_id = 1;
+  string target_commit_id = 2;
+  bool force = 3;
+  reserved 100 to 199;
+}
+
+message RollbackResponse {
+  bool moved = 1;
+  string previous_head_commit_id = 2;
+  string new_head_commit_id = 3;
+  repeated string warnings = 4;
+  reserved 100 to 199;
+}
+
+message ListRunsRequest {
+  PageRequest page = 1;
+  reserved 100 to 199;
+}
+
+message RunSummary {
+  string run_id = 1;
+  uint64 commit_count = 2;
+  Timestamp last_commit_at = 3;
+  reserved 100 to 199;
+}
+
+message ListRunsResponse {
+  repeated RunSummary runs = 1;
+  PageResponse page = 2;
+  reserved 100 to 199;
+}
+
+message ListCommitsRequest {
+  string run_id = 1;
+  string thread_id = 2;
+  string channel = 3;
+  PageRequest page = 4;
+  reserved 100 to 199;
+}
+
+message ListCommitsResponse {
+  repeated Commit commits = 1;
+  PageResponse page = 2;
+  reserved 100 to 199;
+}
+
+message GetCommitRequest {
+  string commit_id = 1;
+  reserved 100 to 199;
+}
+
+message ExportRunRequest {
+  string run_id = 1;
+  string format = 2;
+  reserved 100 to 199;
+}
+
+message ExportRunResponse {
+  string run_id = 1;
+  Payload export_payload = 2;
+  reserved 100 to 199;
+}
+

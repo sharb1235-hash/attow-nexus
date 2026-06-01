@@ -1,0 +1,17 @@
+version: v2
+plugins:
+  - remote: buf.build/protocolbuffers/python
+    out: sdks/python/generated
+  - remote: buf.build/grpc/python
+    out: sdks/python/generated
+  - remote: buf.build/community/stephenh-ts-proto
+    out: sdks/typescript/src/generated
+    opt:
+      - esModuleInterop=true
+      - outputServices=grpc-js
+      - useExactTypes=false
+  - remote: buf.build/community/neoeinstein-prost
+    out: daemon/src/generated/buf
+  - remote: buf.build/community/neoeinstein-tonic
+    out: daemon/src/generated/buf
+

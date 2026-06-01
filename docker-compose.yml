@@ -1,0 +1,26 @@
+﻿services:
+  nexus:
+    build: .
+    image: nexus-nexus:latest
+    container_name: nexus
+    environment:
+      NEXUS_BIND_MODE: tcp
+      NEXUS_REQUIRE_AUTH: "false"
+      NEXUS_ALLOW_REMOTE: "true"
+      NEXUS_GRPC_ADDR: 0.0.0.0:7821
+      NEXUS_HTTP_ADDR: 0.0.0.0:7822
+      NEXUS_METRICS_ADDR: 0.0.0.0:7823
+      NEXUS_DATA_DIR: /data
+      NEXUS_STORE: sqlite
+      NEXUS_SQLITE_PATH: /data/nexus.sqlite
+      NEXUS_ARTIFACT_DIR: /data/artifacts
+    ports:
+      - "127.0.0.1:7821:7821"
+      - "127.0.0.1:7822:7822"
+      - "127.0.0.1:7823:7823"
+    volumes:
+      - nexus-data:/data
+    restart: unless-stopped
+
+volumes:
+  nexus-data:

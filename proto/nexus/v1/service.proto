@@ -1,0 +1,74 @@
+syntax = "proto3";
+
+package nexus.v1;
+
+import "nexus/v1/common.proto";
+import "nexus/v1/ipc.proto";
+import "nexus/v1/ledger.proto";
+
+message CheckpointRequest {
+  string agent_id = 1;
+  string run_id = 2;
+  string thread_id = 3;
+  string channel = 4;
+  string objective = 5;
+  Payload payload = 6;
+  repeated string parent_commit_ids = 7;
+  repeated string tags = 8;
+  string summary = 9;
+  Metadata metadata = 10;
+  repeated ToolCall tool_calls = 11;
+  repeated ToolResult tool_results = 12;
+  repeated ArtifactRef artifact_refs = 13;
+  repeated ExternalSideEffect external_side_effects = 14;
+  reserved 100 to 199;
+}
+
+message CheckpointResponse {
+  string commit_id = 1;
+  string delta_id = 2;
+  bool accepted = 3;
+  bool persisted = 4;
+  string warning = 5;
+  RedactionReport redaction_report = 6;
+  reserved 100 to 199;
+}
+
+message DiffCommitsRequest {
+  string from_commit_id = 1;
+  string to_commit_id = 2;
+  bool from_nearest_common_ancestor = 3;
+  reserved 100 to 199;
+}
+
+message HealthRequest {
+  reserved 100 to 199;
+}
+
+message HealthResponse {
+  string status = 1;
+  string daemon_version = 2;
+  string protocol_version = 3;
+  bool auth_required = 4;
+  string bind_mode = 5;
+  reserved 100 to 199;
+}
+
+service NexusService {
+  rpc RegisterAgent(RegisterAgentRequest) returns (RegisterAgentResponse);
+  rpc OpenStream(stream ClientEvent) returns (stream ServerEvent);
+  rpc PublishDelta(PublishDeltaRequest) returns (PublishDeltaResponse);
+  rpc Subscribe(SubscribeRequest) returns (stream BroadcastDelta);
+  rpc GetChannelSnapshot(ChannelSnapshotRequest) returns (ChannelSnapshotResponse);
+  rpc Checkpoint(CheckpointRequest) returns (CheckpointResponse);
+  rpc GetCommit(GetCommitRequest) returns (Commit);
+  rpc ListRuns(ListRunsRequest) returns (ListRunsResponse);
+  rpc ListCommits(ListCommitsRequest) returns (ListCommitsResponse);
+  rpc DiffCommits(DiffCommitsRequest) returns (CommitDiff);
+  rpc Replay(ReplayRequest) returns (ReplayResult);
+  rpc Fork(ForkRequest) returns (ForkResult);
+  rpc Rollback(RollbackRequest) returns (RollbackResponse);
+  rpc ExportRun(ExportRunRequest) returns (ExportRunResponse);
+  rpc Health(HealthRequest) returns (HealthResponse);
+}
+

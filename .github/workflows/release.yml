@@ -1,0 +1,58 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish_packages:
+        description: "Publish Python and npm packages"
+        type: boolean
+        default: false
+
+jobs:
+  binaries:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo build --release --workspace
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nexus-${{ matrix.os }}
+          path: |
+            target/release/nexus*
+            target/release/nexusd*
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t nexus:${{ github.ref_name }} .
+
+  packages:
+    runs-on: ubuntu-latest
+    if: inputs.publish_packages
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Build Python package
+        working-directory: sdks/python
+        run: |
+          python -m pip install build
+          python -m build
+      - name: Build npm package
+        working-directory: sdks/typescript
+        run: |
+          npm install
+          npm run build
+          npm pack
+      - name: Prepare changelog
+        run: sed -n '1,120p' CHANGELOG.md
+

@@ -1,0 +1,10 @@
+target/
+**/node_modules/
+**/dist/
+**/.venv/
+**/.pytest_cache/
+**/__pycache__/
+.git/
+.nexus/
+*.log
+

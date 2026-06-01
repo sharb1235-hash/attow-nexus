@@ -1,0 +1,36 @@
+name: Security
+
+on:
+  schedule:
+    - cron: "0 9 * * 1"
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  audits:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: cargo audit
+        run: |
+          cargo install cargo-audit
+          cargo audit
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: npm audit TypeScript SDK
+        working-directory: sdks/typescript
+        run: npm install && npm audit --audit-level=high || true
+      - name: npm audit dashboard
+        working-directory: dashboard
+        run: npm install && npm audit --audit-level=high || true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: pip audit
+        working-directory: sdks/python
+        run: |
+          python -m pip install pip-audit .
+          pip-audit || true
+

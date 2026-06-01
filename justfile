@@ -1,0 +1,31 @@
+set shell := ["powershell", "-NoProfile", "-Command"]
+
+dev:
+  cargo run -p nexus -- daemon start
+
+daemon:
+  cargo build -p nexusd
+
+cli:
+  cargo build -p nexus
+
+test:
+  cargo test --workspace
+
+lint:
+  cargo fmt --all -- --check
+  cargo clippy --workspace -- -D warnings
+
+dashboard:
+  cd dashboard; npm.cmd install; npm.cmd run build
+
+docker:
+  docker build -t nexus:local .
+
+proto:
+  buf lint
+  buf generate
+
+bench:
+  cargo run -p nexus -- bench local --events 10000 --payload-size 4096
+

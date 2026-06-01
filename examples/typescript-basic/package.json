@@ -1,0 +1,13 @@
+{
+  "name": "nexus-typescript-basic",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "@nexus-ipc/sdk": "file:../../sdks/typescript",
+    "tsx": "^4.19.0"
+  }
+}
+
