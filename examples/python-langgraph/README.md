@@ -1,8 +1,7 @@
 # Python LangGraph
 
-This example uses the public node-wrapper helper. Nexus records node transitions and complements LangGraph persistence instead of replacing it.
+This older example shows the explicit `wrap_node` helper. For the preferred near-zero-friction compiled graph wrapper, use [../python-langgraph-one-line](../python-langgraph-one-line).
 
-```bash
-python main.py
+```powershell
+py main.py
 ```
-

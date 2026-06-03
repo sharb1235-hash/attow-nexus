@@ -1,0 +1,21 @@
+{
+  "name": "attow-nexus-launch-video",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "render": "node node_modules/@remotion/cli/remotion-cli.js render src/index.tsx AttowNexusLaunch ../../docs/assets/attow-nexus-launch.mp4 --codec=h264 --quality=90",
+    "still": "node node_modules/@remotion/cli/remotion-cli.js still src/index.tsx AttowNexusLaunch --frame=900 --scale=0.35 ../../docs/assets/attow-nexus-launch-still.png"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.376",
+    "remotion": "^4.0.376",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "typescript": "^5.7.2"
+  }
+}

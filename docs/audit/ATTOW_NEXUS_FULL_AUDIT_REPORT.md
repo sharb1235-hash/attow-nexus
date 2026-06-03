@@ -5,7 +5,7 @@ Repository path audited: `C:\Users\Sharb\Documents\Codex\2026-06-01\you-are-code
 
 ## Executive Summary
 
-Attow Nexus has a real working MVP core: Docker starts the Rust daemon/API, the Python demo creates durable commits, the CLI can inspect agents/channels/logs/diff/replay, metrics counters reflect runtime activity, the dashboard builds and can read real daemon data through Vite, and the demo-video pipeline creates a real MP4 from captured outputs.
+Attow Nexus has a real working MVP core: Docker starts the Rust daemon/API, the Python demo creates durable commits, the CLI can inspect agents/channels/logs/diff/replay, metrics counters reflect runtime activity, the dashboard builds and can read real daemon data through Vite, and the demo-video pipeline creates a real MP4 from captured outputs. The v0.1 adapter story is now centered on a credible developer-preview claim: one local daemon, one ledger, one CLI, and three framework surfaces feeding the same run.
 
 The codebase is not ready to be described as a complete production-grade state substrate. Several surfaces are partial or experimental: MCP bridge, local cluster mode, framework adapters, Windows named pipe transport, dashboard action pages, auth/permission depth, release automation, and broad CI/runtime coverage. Previous npm audit blockers for the dashboard and TypeScript SDK were resolved through controlled upgrades.
 
@@ -33,6 +33,7 @@ The product can be launched honestly as an early local-first developer preview i
 - Dashboard API client points at real daemon endpoints through Vite proxy, not mock data.
 - Demo video pipeline creates `docs/assets/nexus-demo.mp4` from real captured outputs.
 - Local stress script created 10, 100, and 500 durable commits through the HTTP API and verified CLI log output.
+- LangGraph, CrewAI-style, and Vercel AI SDK-style wrapper adapters translate into a shared `UniversalAgentEvent` schema for `run_id=universal-demo`.
 
 ## What Is Partial
 
@@ -43,7 +44,10 @@ The product can be launched honestly as an early local-first developer preview i
 - Rollback moves a head pointer and records an event, but runtime dashboard rollback flow is basic.
 - Dashboard pages exist for diff/replay/fork/rollback, but they are form-based MVP controls rather than polished guided workflows.
 - Python and TypeScript SDK tests use fake or local HTTP-style clients for most assertions; only examples exercise a live daemon.
-- Framework adapters are public wrapper helpers, not verified deep integrations with actual LangGraph/CrewAI/AutoGen/Microsoft Agent Framework packages.
+- The LangGraph Python adapter now has verified public-surface compiled graph wrapper tests and a real no-LLM LangGraph example. It is still not a deep checkpointer/store bridge.
+- The CrewAI Python adapter has fake crew wrapper tests and public `step_callback` composition. It is not yet verified against a pinned CrewAI package.
+- The Vercel AI SDK TypeScript adapter has fake `generateText`/`streamText` tests and preserves callbacks. It is not yet verified against a pinned `ai` package in CI.
+- AutoGen/Microsoft Agent Framework adapters remain public wrapper helpers, not verified deep integrations with actual framework packages.
 - Security model is local-first/dev-first; Docker disables auth inside the container and relies on loopback host port publishing.
 
 ## What Is Documentation-Only Or Experimental
@@ -53,7 +57,7 @@ The product can be launched honestly as an early local-first developer preview i
 - Windows named pipe support is represented as configuration plus documented TCP fallback, not an implemented named pipe server.
 - RocksDB store feature is gated and returns a clear error when requested without the feature; no RocksDB implementation was verified.
 - OpenTelemetry and encryption-at-rest flags exist in config, but no complete runtime implementation was verified.
-- Framework-specific adapters are not verified against real framework versions.
+- Framework-specific adapters other than the LangGraph public-surface wrapper are not verified against real framework versions.
 
 ## Architecture Overview
 
@@ -162,7 +166,7 @@ Failed or not available:
 
 1. Docker health reports `localOnly: false` because the daemon binds `0.0.0.0` inside the container, even though host ports are published only on `127.0.0.1`.
 2. Docker Compose sets `NEXUS_REQUIRE_AUTH=false` and `NEXUS_ALLOW_REMOTE=true`; this is acceptable only because host port bindings are loopback-only and docs explain the nuance.
-3. Framework adapters are wrappers, not fully verified framework integrations.
+3. Framework adapters are wrappers. LangGraph, CrewAI-style, and Vercel AI SDK-style surfaces now share a canonical event schema, but no adapter is a private-internals deep framework integration.
 4. Dashboard has MVP forms and polling, not a finished operator console.
 5. MCP/cluster/Windows named pipe claims must remain experimental.
 6. Recent GitHub CI runs are green on the renamed private repository, but these remediation changes still need CI after push.

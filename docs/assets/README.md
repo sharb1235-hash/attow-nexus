@@ -6,8 +6,28 @@ Recommended output files:
 
 - `docs/assets/nexus-demo.mp4`
 - `docs/assets/nexus-demo.gif`
+- `docs/assets/attow-nexus-launch.mp4`
+- `docs/assets/attow-nexus-launch-still.png`
 
 Do not commit a fake or empty binary recording. This placeholder exists so the README can link to the intended launch asset location while the repository is still private.
+
+## Polished Remotion Launch Video
+
+`docs/assets/attow-nexus-launch.mp4` is a scripted 60-second launch video built with Remotion. It is separate from the live captured product demo above: the Remotion video uses accurate generated terminal/dashboard visuals and launch copy for a clean public intro.
+
+Regenerate it from the repository root with:
+
+```powershell
+cd scripts\remotion-launch-video
+npm.cmd install
+npm.cmd run render
+npm.cmd run still
+```
+
+The render writes:
+
+- `docs/assets/attow-nexus-launch.mp4`
+- `docs/assets/attow-nexus-launch-still.png`
 
 ## Generate the Recording
 

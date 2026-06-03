@@ -45,6 +45,13 @@ Artifact threshold smoke against a running daemon:
 node scripts/audit/stress-artifacts.mjs
 ```
 
+Universal translation demo smoke against a running daemon:
+
+```powershell
+py -m pip install langgraph
+node scripts/audit/universal-demo-smoke.mjs
+```
+
 Optional custom levels:
 
 ```powershell

@@ -6,7 +6,22 @@ export type { CheckpointInput, DeltaResult, ForkResult, PublishDeltaInput, Regis
 export { checkpointSchema, channelSchema, publishDeltaSchema, registerAgentSchema } from "./models";
 export { REDACTED, redact } from "./redaction";
 export { FakeNexusClient } from "./testing";
+export {
+  channelForEvent,
+  defaultThreadId,
+  eventToCheckpointPayload,
+  normalizeEvent,
+  redactEvent,
+  safeJsonable,
+  summarizePayload,
+} from "./universal";
+export type { UniversalAgentEvent, UniversalEventType } from "./universal";
 export { wrapAgentStep } from "./adapters/generic";
 export { wrapLangGraphNode } from "./adapters/langgraph";
 export { recordAutoGenMessage } from "./adapters/autogen";
-
+export {
+  createNexusAIEventAdapter,
+  instrumentGenerateText,
+  instrumentStreamText,
+  withNexusAISDK,
+} from "./adapters/vercel-ai";

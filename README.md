@@ -155,6 +155,70 @@ Attow Nexus is useful when logical agent state spans multiple frameworks, langua
 
 The intended relationship is complementary: keep using the framework-native memory that works best inside each app, and use Attow Nexus when shared structured state deltas, durable commits, cross-process observability, diffing, replay, and rollback of captured logical state need to cross framework boundaries.
 
+## Universal Translation Layer Demo
+
+The v0.1 developer-preview claim is simple: **one local daemon, one ledger, one CLI, three framework surfaces feeding the same run.**
+
+Attow Nexus normalizes state events from multiple frameworks into one local bus and ledger. The current adapters are public-surface wrappers. They do not require node pollution or state schema changes, and they do not pretend to be deep framework-native stores. Deep framework-specific checkpointer/store bridges are future work.
+
+Run the local no-key demo in [examples/universal-translation-demo](examples/universal-translation-demo):
+
+```powershell
+cd <repo>
+docker compose up --build
+```
+
+In another PowerShell:
+
+```powershell
+cd <repo>
+cd sdks\python
+py -m pip install -e .
+py -m pip install langgraph
+cd ..\..
+py examples\universal-translation-demo\langgraph_planner.py
+py examples\universal-translation-demo\crewai_researcher.py
+```
+
+In a third PowerShell:
+
+```powershell
+cd <repo>\examples\universal-translation-demo
+npm.cmd install
+npm.cmd run vercel-demo
+```
+
+Then inspect the shared run:
+
+```powershell
+cd <repo>
+cargo run -p nexus -- agents
+cargo run -p nexus -- channels
+cargo run -p nexus -- log --run universal-demo
+```
+
+| Framework surface | Language | Adapter API | Verified level | Notes |
+| --- | --- | --- | --- | --- |
+| LangGraph | Python | `instrument_langgraph` | Verified wrapper with fake graph tests; real no-LLM example when `langgraph` is installed | No node changes |
+| CrewAI | Python | `instrument_crewai` | Verified wrapper with fake crew tests; public `step_callback` composition when available | No task changes |
+| Vercel AI SDK | TypeScript | `instrumentStreamText` / `instrumentGenerateText` | Verified with fake `streamText` / `generateText` | Preserves callbacks |
+
+## LangGraph In Four Lines
+
+```python
+from nexus_ipc import NexusClient
+from nexus_ipc.adapters.langgraph import instrument_langgraph
+
+client = NexusClient.connect()
+graph = instrument_langgraph(graph, client=client, run_id="my-run")
+
+result = graph.invoke(input_state, config={"configurable": {"thread_id": "thread-1"}})
+```
+
+Your node functions do not import Nexus, and your LangGraph state schema does not change. The wrapped graph keeps its normal `.invoke()`, `.stream()`, `.ainvoke()`, and `.astream()` behavior while Attow Nexus records local durable checkpoints for graph start/end, stream updates, errors, run/thread metadata, and replayable commit ancestry.
+
+This is public-surface wrapper instrumentation around the compiled graph API, not private monkeypatching. It complements LangGraph checkpointers rather than replacing them. See [examples/python-langgraph-one-line](examples/python-langgraph-one-line) for a real no-LLM LangGraph example.
+
 ## Install
 
 Docker daemon/API and metrics:
@@ -251,6 +315,8 @@ Open the URL printed by Vite. If port 5173 is already in use, Vite may choose an
 
 The public launch demo should be recorded before the repo is made public. Use [docs/assets/nexus-demo.mp4](docs/assets/nexus-demo.mp4) and/or [docs/assets/nexus-demo.gif](docs/assets/nexus-demo.gif) for the final recording. The shot list lives in [docs/assets/README.md](docs/assets/README.md).
 
+The polished 60-second Remotion launch video is [docs/assets/attow-nexus-launch.mp4](docs/assets/attow-nexus-launch.mp4), with source in [scripts/remotion-launch-video](scripts/remotion-launch-video/README.md).
+
 Generate the real MP4 locally with the repeatable script in [scripts/demo](scripts/demo/README.md):
 
 ```powershell
@@ -276,9 +342,11 @@ Rollback moves NexusLedger head pointers for captured logical state. It does not
 
 ## Framework Integrations
 
-Attow Nexus integrates through public hooks, callbacks, middleware, checkpointers, and explicit wrappers. The Python SDK includes generic, LangGraph, CrewAI, AutoGen, and Microsoft Agent Framework wrapper helpers. The TypeScript SDK includes generic, LangGraph JS, and AutoGen-style wrapper helpers.
+Attow Nexus integrates through public hooks, callbacks, middleware, checkpointers, and explicit wrappers. The Python SDK includes generic, LangGraph, CrewAI, AutoGen, and Microsoft Agent Framework wrapper helpers. The TypeScript SDK includes generic, LangGraph JS, AutoGen-style, and Vercel AI SDK wrapper helpers.
 
 The framework-specific helpers are not verified deep integrations with pinned framework packages yet. They are designed as explicit public-boundary wrappers that complement framework-native persistence instead of replacing it. See [docs/adapters.md](docs/adapters.md).
+
+The LangGraph Python adapter now includes `instrument_langgraph`, a compiled-graph proxy that captures invoke/stream boundaries without changing node code. Node-level detail depends on what LangGraph exposes through public stream/callback events.
 
 ## MCP Bridge
 

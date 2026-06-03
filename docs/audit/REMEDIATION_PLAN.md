@@ -38,6 +38,12 @@
 6. **Add dashboard route smoke tests with real mocked API fixtures.** - DONE
    - `dashboard/src/routes.test.tsx` renders the main dashboard route shells and metrics fixture.
 
+7. **Add universal translation layer developer-preview demo.** - DONE
+   - Python SDK now has a canonical `UniversalAgentEvent` schema and shared adapter base.
+   - LangGraph and CrewAI wrappers emit canonical events without node/task schema pollution.
+   - TypeScript SDK now has a Vercel AI SDK wrapper with optional injected fake or real base functions.
+   - `examples/universal-translation-demo` demonstrates one local daemon, one ledger, one CLI, and three framework surfaces feeding `run_id=universal-demo`.
+
 ## P2 Shortly After Public Launch
 
 1. Add CLI unit/snapshot tests.
@@ -48,6 +54,7 @@
 6. Add dashboard manual QA script or Playwright smoke test.
 7. Add CI secret scanning. - DONE in `.github/workflows/security.yml` with gitleaks.
 8. Add `cargo audit` to local dev docs or `just audit`. - DONE in `justfile` and `Makefile`; local machine still needs `cargo install cargo-audit`.
+9. Convert `scripts/audit/universal-demo-smoke.mjs` into a CI job once dependency caching and optional LangGraph installation are settled.
 
 ## P3 Roadmap
 
