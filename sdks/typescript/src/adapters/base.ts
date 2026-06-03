@@ -121,6 +121,8 @@ export function createNexusAdapterContext(options: NexusAdapterContextOptions): 
       const threadId = context.deriveThreadId(input.threadId);
       const parentCommitId = lastCommitByThread.get(threadId);
       return normalizeEvent({
+        adapterName: options.frameworkName,
+        adapterVersion: String(metadata.adapter_version ?? "0.1.0"),
         runId: options.runId,
         threadId,
         agentId: options.agentId,

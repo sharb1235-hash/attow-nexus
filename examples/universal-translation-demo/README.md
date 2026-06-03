@@ -67,3 +67,9 @@ Expected channels include:
 - `topic:frontend`
 
 The point of the demo is state translation, not LLM output quality: three different framework surfaces publish compatible canonical events into one local bus and one SQLite-backed ledger.
+
+The application-topic commits are chained when run in order:
+
+`topic:plan` -> `topic:research` -> `topic:frontend`
+
+That means replaying the final frontend topic commit can include the prior planner and researcher topic state through parent commit ancestry.

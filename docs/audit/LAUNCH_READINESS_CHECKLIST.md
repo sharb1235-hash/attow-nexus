@@ -8,6 +8,9 @@
 - [x] Local dashboard build passed.
 - [x] Local Python SDK tests passed.
 - [x] Local TypeScript SDK build/tests passed.
+- [x] Python/TypeScript universal fixture parity tests passed.
+- [x] Rust daemon universal event ingestion/validation tests passed.
+- [ ] `node scripts\audit\contract-smoke.mjs` passed against a fresh Docker daemon.
 - [x] Dashboard npm audit reviewed/fixed; `npm.cmd audit` reports zero vulnerabilities.
 - [x] TypeScript SDK npm audit reviewed/fixed; `npm.cmd audit` reports zero vulnerabilities.
 - [ ] `cargo audit` run in CI or locally.
@@ -34,6 +37,7 @@
 - [x] TypeScript SDK install/build/test passed.
 - [x] TypeScript basic example ran against daemon.
 - [x] Clearly label framework adapters as wrapper helpers unless verified with actual frameworks.
+- [x] Canonical `UniversalAgentEvent` contract documented and fixture-tested.
 
 ## CLI
 

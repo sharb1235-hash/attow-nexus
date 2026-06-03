@@ -1,4 +1,5 @@
 use std::net::SocketAddr;
+use std::path::Path;
 use std::sync::Arc;
 
 use axum::http::{HeaderMap, HeaderValue, StatusCode};
@@ -10,7 +11,9 @@ use nexusd::generated::nexus::v1::{
     PublishDeltaRequest, RegisterAgentRequest, StateDelta, SubscriptionFilter,
 };
 use nexusd::grpc::service::AppState;
+use nexusd::http::api::validate_universal_event;
 use nexusd::ledger::dag::DagIndex;
+use nexusd::ledger::diff::payload_to_json;
 use nexusd::ledger::sqlite_store::SqliteStore;
 use nexusd::ledger::store::Store;
 use nexusd::observability::metrics::Metrics;
@@ -49,7 +52,15 @@ fn test_config(dir: &tempfile::TempDir) -> Config {
 }
 
 fn state(dir: &tempfile::TempDir) -> AppState {
+    state_with_max_inline(dir, 128)
+}
+
+fn state_with_max_inline(dir: &tempfile::TempDir, max_inline_payload_bytes: usize) -> AppState {
     let config = test_config(dir);
+    let config = Config {
+        max_inline_payload_bytes,
+        ..config
+    };
     config.prepare().unwrap();
     let store = Arc::new(SqliteStore::open(&config).unwrap());
     let dag = Arc::new(DagIndex::from_commits(&[]).unwrap());
@@ -242,6 +253,114 @@ async fn redaction_and_artifacts_are_applied() {
     assert!(String::from_utf8_lossy(&bytes).contains("[REDACTED]"));
 }
 
+#[tokio::test]
+async fn universal_event_fixtures_ingest_validate_and_replay() {
+    let dir = tempfile::tempdir().unwrap();
+    let state = state_with_max_inline(&dir, 16 * 1024);
+
+    let langgraph = fixture("langgraph-run-start.json");
+    validate_universal_event(&langgraph).unwrap();
+    let langgraph_commit = state
+        .checkpoint_inner(event_checkpoint(langgraph.clone(), None))
+        .await
+        .unwrap();
+    assert!(langgraph_commit.persisted);
+
+    let crewai = fixture("crewai-task-start.json");
+    validate_universal_event(&crewai).unwrap();
+    let crewai_commit = state
+        .checkpoint_inner(event_checkpoint(crewai, None))
+        .await
+        .unwrap();
+    assert!(crewai_commit.persisted);
+
+    let vercel = fixture("vercel-step-finish.json");
+    validate_universal_event(&vercel).unwrap();
+    let vercel_commit = state
+        .checkpoint_inner(event_checkpoint(
+            vercel,
+            Some(vec![crewai_commit.commit_id.clone()]),
+        ))
+        .await
+        .unwrap();
+    assert!(vercel_commit.persisted);
+
+    let parent = fixture("parent-chain-start.json");
+    let parent_commit = state
+        .checkpoint_inner(event_checkpoint(parent, None))
+        .await
+        .unwrap();
+    let child = fixture("parent-chain-child.json");
+    let child_commit = state
+        .checkpoint_inner(event_checkpoint(child, Some(vec![parent_commit.commit_id])))
+        .await
+        .unwrap();
+    let replay = state
+        .replay_inner(nexusd::generated::nexus::v1::ReplayRequest {
+            commit_id: child_commit.commit_id,
+            mode: nexusd::generated::nexus::v1::ReplayMode::StateOnly as i32,
+            confirm_reexecute_tools: false,
+        })
+        .unwrap();
+    let replay_state: serde_json::Value =
+        serde_json::from_slice(&replay.reconstructed_state.unwrap().data).unwrap();
+    assert_eq!(replay.provenance_commit_ids.len(), 2);
+    assert_eq!(replay_state["output"]["plan"], "draft");
+    assert_eq!(replay_state["output"]["research"], "complete");
+
+    let redaction = fixture("redaction-event.json");
+    let redacted = state
+        .checkpoint_inner(event_checkpoint(redaction, None))
+        .await
+        .unwrap();
+    assert!(redacted.redaction_report.unwrap().redacted);
+    let commit = state
+        .store
+        .get_commit(&redacted.commit_id)
+        .unwrap()
+        .unwrap();
+    let persisted = if let Some(artifact) = commit.artifact_refs.first() {
+        String::from_utf8(
+            state
+                .store
+                .get_artifact(&artifact.artifact_id)
+                .unwrap()
+                .unwrap(),
+        )
+        .unwrap()
+    } else {
+        payload_to_json(commit.state_delta.as_ref()).to_string()
+    };
+    assert!(!persisted.contains("sk-testsecretvalue"));
+    assert!(!persisted.contains("secret-token-value"));
+    assert!(!persisted.contains("correct horse"));
+
+    let large = fixture("large-payload-event.json");
+    let large_commit = state
+        .checkpoint_inner(event_checkpoint(large, None))
+        .await
+        .unwrap();
+    assert!(large_commit.persisted);
+}
+
+#[test]
+fn malformed_universal_event_fixtures_are_rejected() {
+    let missing = validate_universal_event(&fixture("malformed-missing-run-id.json"))
+        .unwrap_err()
+        .1;
+    assert!(missing.contains("UniversalAgentEvent.run_id is required"));
+
+    let channel = validate_universal_event(&fixture("malformed-invalid-channel.json"))
+        .unwrap_err()
+        .1;
+    assert!(channel.contains("channel must match allowed Nexus channel pattern"));
+
+    let parents = validate_universal_event(&fixture("malformed-bad-parent-ids.json"))
+        .unwrap_err()
+        .1;
+    assert!(parents.contains("parent_commit_ids must be an array of commit ID strings"));
+}
+
 #[test]
 fn dag_rejects_cycles_and_remote_bind_is_rejected() {
     let dag = DagIndex::from_commits(&[]).unwrap();
@@ -316,5 +435,52 @@ fn json_payload(json: &str) -> Payload {
         content_hash: blake3_hex(&bytes),
         compressed: false,
         artifact_ref: String::new(),
+    }
+}
+
+fn fixture(name: &str) -> serde_json::Value {
+    let path = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .parent()
+        .unwrap()
+        .join("test-fixtures")
+        .join("universal-events")
+        .join(name);
+    serde_json::from_str(&std::fs::read_to_string(path).unwrap()).unwrap()
+}
+
+fn event_checkpoint(value: serde_json::Value, parents: Option<Vec<String>>) -> CheckpointRequest {
+    let object = value.as_object().unwrap();
+    let parent_commit_ids = parents.unwrap_or_else(|| {
+        object["parent_commit_ids"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|value| value.as_str().unwrap().to_string())
+            .collect()
+    });
+    CheckpointRequest {
+        agent_id: object["agent_id"].as_str().unwrap().to_string(),
+        run_id: object["run_id"].as_str().unwrap().to_string(),
+        thread_id: object["thread_id"].as_str().unwrap().to_string(),
+        channel: object["channel"].as_str().unwrap().to_string(),
+        objective: String::new(),
+        payload: Some(json_payload(&value.to_string())),
+        parent_commit_ids,
+        tags: object["tags"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|value| value.as_str().unwrap().to_string())
+            .collect(),
+        summary: format!(
+            "{} {}",
+            object["framework"].as_str().unwrap(),
+            object["event_type"].as_str().unwrap()
+        ),
+        metadata: None,
+        tool_calls: Vec::new(),
+        tool_results: Vec::new(),
+        artifact_refs: Vec::new(),
+        external_side_effects: Vec::new(),
     }
 }

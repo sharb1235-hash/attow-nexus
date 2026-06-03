@@ -44,6 +44,13 @@
    - TypeScript SDK now has a Vercel AI SDK wrapper with optional injected fake or real base functions.
    - `examples/universal-translation-demo` demonstrates one local daemon, one ledger, one CLI, and three framework surfaces feeding `run_id=universal-demo`.
 
+8. **Harden serialization and interoperability contract.** - DONE
+   - Added canonical snake_case fixtures in `test-fixtures/universal-events`.
+   - Added shared golden outputs in `test-fixtures/golden`.
+   - Python and TypeScript fixture parity tests validate normalization, redaction, parent IDs, timestamps, malformed input, and golden output.
+   - Added daemon `/api/events` validation and Rust tests for ingestion/replay/redaction/malformed fixtures.
+   - Added `scripts/audit/contract-smoke.mjs` for runtime fixture replay against a live daemon.
+
 ## P2 Shortly After Public Launch
 
 1. Add CLI unit/snapshot tests.

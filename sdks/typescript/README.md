@@ -45,3 +45,5 @@ The wrapper composes `onStepFinish`, `onFinish`, and `onError` callbacks and emi
 ## Universal Event Schema
 
 TypeScript adapters use the same `UniversalAgentEvent` shape as the Python SDK so LangGraph, CrewAI, Vercel AI SDK, and custom workers can feed the same local run and ledger.
+
+TypeScript APIs may accept camelCase, but `eventToCheckpointPayload` serializes canonical snake_case for the daemon. Fixture parity tests load the same `test-fixtures/universal-events` JSON files and compare selected outputs against `test-fixtures/golden`.

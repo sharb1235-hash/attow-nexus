@@ -1,0 +1,24 @@
+{
+  "schema_version": "nexus.universal.v1",
+  "sdk_name": "nexus-ipc",
+  "sdk_version": "0.1.0",
+  "adapter_name": "langgraph",
+  "adapter_version": "0.1.0",
+  "event_id": "evt_langgraph_run_start",
+  "run_id": "contract-fixture-demo",
+  "thread_id": "main",
+  "agent_id": "langgraph-planner",
+  "framework": "langgraph",
+  "language": "python",
+  "event_type": "run_start",
+  "channel": "framework:langgraph:contract-fixture-demo",
+  "input": {
+    "messages": ["user: plan local coordination"]
+  },
+  "metadata": {
+    "method": "invoke"
+  },
+  "tags": ["contract", "langgraph"],
+  "parent_commit_ids": [],
+  "timestamp_ms": 1780476000000
+}

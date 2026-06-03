@@ -131,10 +131,13 @@ async function main() {
     }
   } finally {
     if (browser) {
-      await browser.close();
+      await Promise.race([
+        browser.close(),
+        new Promise((resolve) => setTimeout(resolve, 5000))
+      ]);
     }
     if (dashboard.startedProcess) {
-      dashboard.startedProcess.kill();
+      dashboard.startedProcess.kill("SIGKILL");
     }
   }
 
@@ -147,6 +150,7 @@ async function main() {
   if (makeGif) {
     console.log(`Demo GIF created: ${gifPath}`);
   }
+  process.exit(0);
 }
 
 async function ensureFfmpeg() {
@@ -280,11 +284,18 @@ async function ensureDashboardServer() {
     });
   }
 
-  const child = spawn(npmCommand(), ["run", "dev"], {
-    cwd: dashboardDir,
-    shell: false,
-    windowsHide: true
-  });
+  const npm = npmCommand();
+  const child = process.platform === "win32"
+    ? spawn("cmd.exe", ["/c", npm, "run", "dev"], {
+        cwd: dashboardDir,
+        shell: false,
+        windowsHide: true
+      })
+    : spawn(npm, ["run", "dev"], {
+        cwd: dashboardDir,
+        shell: false,
+        windowsHide: true
+      });
   let output = "";
   const outputFile = path.join(outDir, "dashboard-dev.txt");
   const append = async (chunk) => {
@@ -332,7 +343,8 @@ async function captureDashboardScreens(browser, dashboardUrl) {
   const screenshots = {};
   for (const [name, route] of routes) {
     const file = path.join(outDir, `dashboard-${name}.png`);
-    await page.goto(`${dashboardUrl}${route}`, { waitUntil: "networkidle" });
+    await page.goto(`${dashboardUrl}${route}`, { waitUntil: "domcontentloaded" });
+    await page.waitForTimeout(1000);
     await page.waitForTimeout(1200);
     await page.screenshot({ path: file, fullPage: false });
     screenshots[name] = file;
@@ -736,7 +748,11 @@ async function runCapture(command, args, options) {
 
 function run(command, args, options = {}) {
   return new Promise((resolve) => {
-    const child = spawn(command, args, {
+    const spawnCommand = process.platform === "win32" && /\.(cmd|bat|exe)$/i.test(command)
+      ? "cmd.exe"
+      : command;
+    const spawnArgs = spawnCommand === "cmd.exe" ? ["/c", command, ...args] : args;
+    const child = spawn(spawnCommand, spawnArgs, {
       cwd: options.cwd ?? repoRoot,
       shell: false,
       windowsHide: true,
@@ -760,7 +776,11 @@ function run(command, args, options = {}) {
 }
 
 function runSyncish(command, args, cwd) {
-  return spawnSync(command, args, {
+  const spawnCommand = process.platform === "win32" && /\.(cmd|bat|exe)$/i.test(command)
+    ? "cmd.exe"
+    : command;
+  const spawnArgs = spawnCommand === "cmd.exe" ? ["/c", command, ...args] : args;
+  return spawnSync(spawnCommand, spawnArgs, {
     cwd,
     shell: false,
     windowsHide: true,

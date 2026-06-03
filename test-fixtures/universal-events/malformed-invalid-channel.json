@@ -1,0 +1,15 @@
+{
+  "schema_version": "nexus.universal.v1",
+  "event_id": "evt_invalid_channel",
+  "run_id": "contract-fixture-demo",
+  "thread_id": "main",
+  "agent_id": "broken-agent",
+  "framework": "langgraph",
+  "language": "python",
+  "event_type": "run_start",
+  "channel": "bad channel with spaces",
+  "metadata": {},
+  "tags": [],
+  "parent_commit_ids": [],
+  "timestamp_ms": 1780476012000
+}

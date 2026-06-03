@@ -1,0 +1,15 @@
+{
+  "schema_version": "nexus.universal.v1",
+  "event_id": "evt_bad_parent_ids",
+  "run_id": "contract-fixture-demo",
+  "thread_id": "main",
+  "agent_id": "broken-agent",
+  "framework": "langgraph",
+  "language": "python",
+  "event_type": "state_checkpoint",
+  "channel": "state:contract-fixture-demo:main",
+  "metadata": {},
+  "tags": [],
+  "parent_commit_ids": ["c_valid", 123],
+  "timestamp_ms": 1780476013000
+}

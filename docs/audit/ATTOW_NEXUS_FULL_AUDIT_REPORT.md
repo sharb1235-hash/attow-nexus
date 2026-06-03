@@ -5,7 +5,7 @@ Repository path audited: `C:\Users\Sharb\Documents\Codex\2026-06-01\you-are-code
 
 ## Executive Summary
 
-Attow Nexus has a real working MVP core: Docker starts the Rust daemon/API, the Python demo creates durable commits, the CLI can inspect agents/channels/logs/diff/replay, metrics counters reflect runtime activity, the dashboard builds and can read real daemon data through Vite, and the demo-video pipeline creates a real MP4 from captured outputs. The v0.1 adapter story is now centered on a credible developer-preview claim: one local daemon, one ledger, one CLI, and three framework surfaces feeding the same run.
+Attow Nexus has a real working MVP core: Docker starts the Rust daemon/API, the Python demo creates durable commits, the CLI can inspect agents/channels/logs/diff/replay, metrics counters reflect runtime activity, the dashboard builds and can read real daemon data through Vite, and the demo-video pipeline creates a real MP4 from captured outputs. The v0.1 adapter story is now centered on a credible developer-preview claim: one local daemon, one ledger, one CLI, and three framework surfaces feeding the same run. The serialization contract has shared Python/TypeScript fixtures, golden outputs, malformed-input tests, and daemon ingestion validation.
 
 The codebase is not ready to be described as a complete production-grade state substrate. Several surfaces are partial or experimental: MCP bridge, local cluster mode, framework adapters, Windows named pipe transport, dashboard action pages, auth/permission depth, release automation, and broad CI/runtime coverage. Previous npm audit blockers for the dashboard and TypeScript SDK were resolved through controlled upgrades.
 
@@ -34,12 +34,15 @@ The product can be launched honestly as an early local-first developer preview i
 - Demo video pipeline creates `docs/assets/nexus-demo.mp4` from real captured outputs.
 - Local stress script created 10, 100, and 500 durable commits through the HTTP API and verified CLI log output.
 - LangGraph, CrewAI-style, and Vercel AI SDK-style wrapper adapters translate into a shared `UniversalAgentEvent` schema for `run_id=universal-demo`.
+- Canonical universal event fixtures cover valid events, parent chains, large payload behavior, redaction, and malformed inputs.
+- `POST /api/events` accepts canonical snake_case `UniversalAgentEvent` JSON and turns it into durable commits through the same ledger path.
 
 ## What Is Partial
 
 - NexusLedger DAG works for explicit parent chains. The basic Python demo now links the researcher commit to the planner commit; independent roots in the same run still do not replay as one combined timeline.
 - Diff is a JSON-like payload diff plus shallow metadata/count comparisons. It is useful, but not a full semantic commit diff.
 - Replay reconstructs captured logical state by merging ancestry payloads. It does not replay messages in the demo and does not execute tools by default.
+- Replay follows parent commit ancestry. The fixture parent-chain test verifies parent and child event state merge when payloads are inline; artifact-backed replay remains limited by current artifact handling.
 - Fork sets a new run head and records an event, but branch UX and follow-on fork commit semantics are minimal.
 - Rollback moves a head pointer and records an event, but runtime dashboard rollback flow is basic.
 - Dashboard pages exist for diff/replay/fork/rollback, but they are form-based MVP controls rather than polished guided workflows.
@@ -173,6 +176,7 @@ Failed or not available:
 7. `cargo audit` was not run locally because `cargo-audit` is not installed; the install attempt timed out.
 8. Rust tests are useful but small: daemon coverage exists, but CLI unit/snapshot tests are still missing.
 9. Replay/DAG behavior depends on parent links. Independent root commits in the same run do not replay as one combined run timeline.
+10. The universal contract is now fixture-tested across Python and TypeScript, but future language SDKs must adopt the same fixture/golden suite before being marketed as compatible.
 
 ## Recommended Launch Decision
 

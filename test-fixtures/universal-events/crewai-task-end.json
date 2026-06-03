@@ -1,0 +1,25 @@
+{
+  "schema_version": "nexus.universal.v1",
+  "sdk_name": "nexus-ipc",
+  "sdk_version": "0.1.0",
+  "adapter_name": "crewai",
+  "adapter_version": "0.1.0",
+  "event_id": "evt_crewai_task_end",
+  "run_id": "contract-fixture-demo",
+  "thread_id": "main",
+  "agent_id": "crewai-researcher",
+  "framework": "crewai",
+  "language": "python",
+  "event_type": "task_end",
+  "channel": "state:contract-fixture-demo:main",
+  "task_name": "research",
+  "output": {
+    "findings": ["local daemon reachable", "ledger accepted commits"]
+  },
+  "metadata": {
+    "role": "researcher"
+  },
+  "tags": ["contract", "crewai"],
+  "parent_commit_ids": ["c_parent_crewai"],
+  "timestamp_ms": 1780476003000
+}

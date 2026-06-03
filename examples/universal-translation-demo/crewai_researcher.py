@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import json
 from typing import Any
+import urllib.request
 
 from nexus_ipc import NexusClient
 from nexus_ipc.adapters.crewai import instrument_crewai
@@ -31,6 +33,13 @@ class FakeCrew:
         }
 
 
+def latest_commit_for_channel(channel: str) -> str | None:
+    with urllib.request.urlopen(f"http://127.0.0.1:7822/api/runs/{RUN_ID}/commits", timeout=15) as response:
+        commits = json.loads(response.read().decode("utf-8"))
+    matching = [commit for commit in commits if commit.get("channel") == channel]
+    return matching[-1]["commitId"] if matching else None
+
+
 def main() -> None:
     client = NexusClient.connect()
     crew = instrument_crewai(
@@ -43,6 +52,7 @@ def main() -> None:
         metadata={"demo_surface": "fake-crewai-public-shape"},
     )
     result = crew.kickoff(inputs={"plan": ["collect local facts", "summarize evidence"]})
+    parent = latest_commit_for_channel("topic:plan")
     commit = client.checkpoint(
         agent_id="crewai-researcher",
         run_id=RUN_ID,
@@ -51,6 +61,7 @@ def main() -> None:
         state={"research": result["findings"], "source": "crewai"},
         summary="CrewAI researcher published research",
         tags=["universal-demo", "crewai", "topic"],
+        parent_commit_ids=[parent] if parent else [],
     )
     print("CrewAI researcher result:")
     print(result)

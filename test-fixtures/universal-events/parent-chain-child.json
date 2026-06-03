@@ -1,0 +1,24 @@
+{
+  "schema_version": "nexus.universal.v1",
+  "sdk_name": "nexus-ipc",
+  "sdk_version": "0.1.0",
+  "adapter_name": "crewai",
+  "adapter_version": "0.1.0",
+  "event_id": "evt_parent_child",
+  "run_id": "contract-fixture-demo",
+  "thread_id": "main",
+  "agent_id": "crewai-researcher",
+  "framework": "crewai",
+  "language": "python",
+  "event_type": "state_checkpoint",
+  "channel": "state:contract-fixture-demo:main",
+  "output": {
+    "research": "complete"
+  },
+  "metadata": {
+    "chain": "child"
+  },
+  "tags": ["contract", "parent-chain"],
+  "parent_commit_ids": ["c_fixture_parent_start"],
+  "timestamp_ms": 1780476008000
+}

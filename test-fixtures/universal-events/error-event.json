@@ -1,0 +1,26 @@
+{
+  "schema_version": "nexus.universal.v1",
+  "sdk_name": "nexus-ipc",
+  "sdk_version": "0.1.0",
+  "adapter_name": "langgraph",
+  "adapter_version": "0.1.0",
+  "event_id": "evt_error",
+  "run_id": "contract-fixture-demo",
+  "thread_id": "main",
+  "agent_id": "langgraph-planner",
+  "framework": "langgraph",
+  "language": "python",
+  "event_type": "error",
+  "channel": "events:contract-fixture-demo:main",
+  "step_name": "invoke",
+  "error": {
+    "type": "ValueError",
+    "message": "planner failed"
+  },
+  "metadata": {
+    "method": "invoke"
+  },
+  "tags": ["contract", "error"],
+  "parent_commit_ids": ["c_parent_error"],
+  "timestamp_ms": 1780476006000
+}

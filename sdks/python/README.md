@@ -57,3 +57,5 @@ The proxy preserves `kickoff`, `kickoff_for_each`, and `kickoff_async` behavior 
 ## Universal Event Schema
 
 LangGraph, CrewAI, and generic helpers translate framework-specific events into `UniversalAgentEvent` payloads. This keeps Attow Nexus as the neutral local bus and ledger underneath frameworks rather than a replacement framework.
+
+The canonical daemon/storage shape is snake_case with `schema_version="nexus.universal.v1"`. Required fields include `event_id`, `run_id`, `thread_id`, `agent_id`, `framework`, `language`, `event_type`, `channel`, `metadata`, `tags`, `parent_commit_ids`, and `timestamp_ms`. Python fixtures are tested against the shared JSON files in `test-fixtures/universal-events`.

@@ -74,6 +74,8 @@ Tests passed:
 - Rust redaction/artifact test.
 - Python redaction tests.
 - TypeScript redaction tests.
+- Cross-language universal redaction fixture tests.
+- Daemon universal event ingestion test verifies persisted fixture data does not include the original `api_key`, bearer token, or password.
 
 Status: **VERIFIED for common patterns, not exhaustive DLP.**
 

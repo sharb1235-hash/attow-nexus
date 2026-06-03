@@ -2,13 +2,27 @@ from __future__ import annotations
 
 import inspect
 import json
+import re
 import time
 import uuid
 from typing import Any, Literal
 
 from pydantic import BaseModel, Field
+from pydantic import field_validator
 
 from .redaction import redact
+
+CHANNEL_RE = re.compile(r"^[a-z][a-z0-9_]*:[A-Za-z0-9_.:\-*]+$")
+ID_RE = re.compile(r"^[A-Za-z0-9_.:\-]+$")
+ALLOWED_FRAMEWORKS = {
+    "autogen",
+    "crewai",
+    "custom",
+    "generic",
+    "langgraph",
+    "microsoft-agent-framework",
+    "vercel-ai",
+}
 
 UniversalEventType = Literal[
     "run_start",
@@ -30,6 +44,11 @@ UniversalEventType = Literal[
 
 
 class UniversalAgentEvent(BaseModel):
+    schema_version: str = "nexus.universal.v1"
+    sdk_name: str = "nexus-ipc"
+    sdk_version: str = "0.1.0"
+    adapter_name: str = "generic"
+    adapter_version: str = "0.1.0"
     event_id: str = Field(default_factory=lambda: f"evt_{uuid.uuid4().hex}")
     run_id: str
     thread_id: str
@@ -52,6 +71,57 @@ class UniversalAgentEvent(BaseModel):
     tags: list[str] = Field(default_factory=list)
     parent_commit_ids: list[str] = Field(default_factory=list)
     timestamp_ms: int = Field(default_factory=lambda: int(time.time() * 1000))
+
+    @field_validator("schema_version")
+    @classmethod
+    def valid_schema_version(cls, value: str) -> str:
+        if value != "nexus.universal.v1":
+            raise ValueError("UniversalAgentEvent.schema_version must be nexus.universal.v1")
+        return value
+
+    @field_validator("run_id", "thread_id", "agent_id", "event_id")
+    @classmethod
+    def required_id(cls, value: str, info: Any) -> str:
+        if not value:
+            raise ValueError(f"UniversalAgentEvent.{info.field_name} is required")
+        if not ID_RE.match(value):
+            raise ValueError(f"UniversalAgentEvent.{info.field_name} contains invalid characters")
+        return value
+
+    @field_validator("framework")
+    @classmethod
+    def valid_framework(cls, value: str) -> str:
+        if value not in ALLOWED_FRAMEWORKS:
+            raise ValueError(
+                "UniversalAgentEvent.framework must be one of "
+                + ", ".join(sorted(ALLOWED_FRAMEWORKS))
+            )
+        return value
+
+    @field_validator("channel")
+    @classmethod
+    def valid_channel(cls, value: str) -> str:
+        if value and not CHANNEL_RE.match(value):
+            raise ValueError("channel must match allowed Nexus channel pattern")
+        return value
+
+    @field_validator("parent_commit_ids", mode="before")
+    @classmethod
+    def valid_parent_commit_ids(cls, value: Any) -> list[str]:
+        if value is None:
+            return []
+        if not isinstance(value, list) or not all(isinstance(item, str) and item for item in value):
+            raise ValueError("parent_commit_ids must be an array of commit ID strings")
+        return value
+
+    @field_validator("timestamp_ms", mode="before")
+    @classmethod
+    def valid_timestamp_ms(cls, value: Any) -> int:
+        if not isinstance(value, int):
+            raise ValueError("timestamp_ms must be an integer Unix timestamp in milliseconds")
+        if value <= 0:
+            raise ValueError("timestamp_ms must be an integer Unix timestamp in milliseconds")
+        return value
 
 
 def default_thread_id(run_id: str, framework: str) -> str:
@@ -115,11 +185,7 @@ def summarize_payload(value: Any, max_chars: int = 500) -> str:
 
 def redact_event(event: UniversalAgentEvent) -> UniversalAgentEvent:
     data = event.model_dump()
-    clean, findings = redact(data)
-    metadata = dict(clean.get("metadata") or {})
-    if findings:
-        metadata["redaction_findings"] = findings
-    clean["metadata"] = metadata
+    clean, _ = redact(data)
     return UniversalAgentEvent.model_validate(clean)
 
 

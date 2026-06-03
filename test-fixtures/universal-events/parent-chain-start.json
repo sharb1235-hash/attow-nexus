@@ -1,0 +1,24 @@
+{
+  "schema_version": "nexus.universal.v1",
+  "sdk_name": "nexus-ipc",
+  "sdk_version": "0.1.0",
+  "adapter_name": "langgraph",
+  "adapter_version": "0.1.0",
+  "event_id": "evt_parent_start",
+  "run_id": "contract-fixture-demo",
+  "thread_id": "main",
+  "agent_id": "langgraph-planner",
+  "framework": "langgraph",
+  "language": "python",
+  "event_type": "state_checkpoint",
+  "channel": "state:contract-fixture-demo:main",
+  "output": {
+    "plan": "draft"
+  },
+  "metadata": {
+    "chain": "start"
+  },
+  "tags": ["contract", "parent-chain"],
+  "parent_commit_ids": [],
+  "timestamp_ms": 1780476007000
+}

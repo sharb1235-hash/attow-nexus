@@ -1,0 +1,14 @@
+{
+  "schema_version": "nexus.universal.v1",
+  "event_id": "evt_missing_run",
+  "thread_id": "main",
+  "agent_id": "broken-agent",
+  "framework": "langgraph",
+  "language": "python",
+  "event_type": "run_start",
+  "channel": "framework:langgraph:contract-fixture-demo",
+  "metadata": {},
+  "tags": [],
+  "parent_commit_ids": [],
+  "timestamp_ms": 1780476011000
+}

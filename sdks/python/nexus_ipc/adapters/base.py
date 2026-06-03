@@ -106,6 +106,8 @@ class NexusAdapterBase:
         if parent_commit_ids is None and self._last_commit_id_by_thread.get(resolved_thread_id):
             parent_commit_ids = [self._last_commit_id_by_thread[resolved_thread_id]]
         return normalize_event(
+            adapter_name=self.framework_name,
+            adapter_version=str(self.metadata.get("adapter_version", "0.1.0")),
             run_id=self.run_id,
             thread_id=resolved_thread_id,
             agent_id=self.agent_id,

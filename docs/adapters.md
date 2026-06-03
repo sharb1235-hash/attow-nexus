@@ -39,6 +39,8 @@ Attow Nexus normalizes framework events into a canonical `UniversalAgentEvent` s
 
 The current adapters are public-surface wrappers. They do not require node pollution or state schema changes. Deep framework-specific checkpointer/store bridges are future work.
 
+The canonical wire/storage JSON shape is snake_case and is documented in [docs/protocol.md](protocol.md). Python and TypeScript fixtures share the same golden outputs in `test-fixtures/golden`.
+
 | Framework | Language | Adapter API | Verified level | Notes |
 | --- | --- | --- | --- | --- |
 | LangGraph | Python | `instrument_langgraph` | Verified wrapper with fake graph; optional real example if installed | No node changes |

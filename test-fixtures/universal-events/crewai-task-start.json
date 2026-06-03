@@ -1,0 +1,25 @@
+{
+  "schema_version": "nexus.universal.v1",
+  "sdk_name": "nexus-ipc",
+  "sdk_version": "0.1.0",
+  "adapter_name": "crewai",
+  "adapter_version": "0.1.0",
+  "event_id": "evt_crewai_task_start",
+  "run_id": "contract-fixture-demo",
+  "thread_id": "main",
+  "agent_id": "crewai-researcher",
+  "framework": "crewai",
+  "language": "python",
+  "event_type": "task_start",
+  "channel": "events:contract-fixture-demo:main",
+  "task_name": "research",
+  "input": {
+    "plan": ["research", "write", "review"]
+  },
+  "metadata": {
+    "role": "researcher"
+  },
+  "tags": ["contract", "crewai"],
+  "parent_commit_ids": [],
+  "timestamp_ms": 1780476002000
+}

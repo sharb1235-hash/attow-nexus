@@ -1,0 +1,26 @@
+{
+  "schema_version": "nexus.universal.v1",
+  "sdk_name": "@nexus-ipc/sdk",
+  "sdk_version": "0.1.0",
+  "adapter_name": "vercel-ai",
+  "adapter_version": "0.1.0",
+  "event_id": "evt_stream_delta",
+  "run_id": "contract-fixture-demo",
+  "thread_id": "main",
+  "agent_id": "vercel-ai-frontend",
+  "framework": "vercel-ai",
+  "language": "typescript",
+  "event_type": "stream_delta",
+  "channel": "events:contract-fixture-demo:main",
+  "step_name": "streamText",
+  "delta": {
+    "sequence": 1,
+    "text": "local"
+  },
+  "metadata": {
+    "provider": "fake-local"
+  },
+  "tags": ["contract", "stream"],
+  "parent_commit_ids": ["c_parent_stream"],
+  "timestamp_ms": 1780476005000
+}

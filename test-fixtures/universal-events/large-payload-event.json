@@ -1,0 +1,24 @@
+{
+  "schema_version": "nexus.universal.v1",
+  "sdk_name": "nexus-ipc",
+  "sdk_version": "0.1.0",
+  "adapter_name": "generic",
+  "adapter_version": "0.1.0",
+  "event_id": "evt_large_payload",
+  "run_id": "contract-fixture-demo",
+  "thread_id": "main",
+  "agent_id": "generic-worker",
+  "framework": "generic",
+  "language": "python",
+  "event_type": "state_checkpoint",
+  "channel": "state:contract-fixture-demo:main",
+  "output": {
+    "payload": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  },
+  "metadata": {
+    "payload_policy": "daemon may inline, compress, or artifact-offload according to local config"
+  },
+  "tags": ["contract", "large-payload"],
+  "parent_commit_ids": [],
+  "timestamp_ms": 1780476009000
+}

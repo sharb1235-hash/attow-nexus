@@ -161,6 +161,8 @@ The v0.1 developer-preview claim is simple: **one local daemon, one ledger, one 
 
 Attow Nexus normalizes state events from multiple frameworks into one local bus and ledger. The current adapters are public-surface wrappers. They do not require node pollution or state schema changes, and they do not pretend to be deep framework-native stores. Deep framework-specific checkpointer/store bridges are future work.
 
+The shared event contract is documented in [docs/protocol.md](docs/protocol.md), and the HTTP JSON surface is documented in [docs/http-api.md](docs/http-api.md). Python and TypeScript adapters are tested against the same canonical fixtures in `test-fixtures/universal-events`.
+
 Run the local no-key demo in [examples/universal-translation-demo](examples/universal-translation-demo):
 
 ```powershell

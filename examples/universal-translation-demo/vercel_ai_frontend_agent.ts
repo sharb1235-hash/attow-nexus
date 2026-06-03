@@ -47,6 +47,7 @@ async function main() {
     messages: [{ role: "user", content: "Stream a local UI note." }],
   });
   await new Promise((resolve) => setTimeout(resolve, 50));
+  const parent = await latestCommitForChannel("topic:research");
 
   const commit = await client.checkpoint({
     agentId: "vercel-ai-frontend",
@@ -56,11 +57,22 @@ async function main() {
     state: { generated, streamed, source: "vercel-ai" },
     summary: "Vercel AI frontend agent published frontend copy",
     tags: ["universal-demo", "vercel-ai", "topic"],
+    parentCommitIds: parent ? [parent] : [],
   });
 
   console.log("Vercel AI frontend result:");
   console.log({ generated, streamed });
   console.log(`topic:frontend commit: ${commit.commitId}`);
+}
+
+async function latestCommitForChannel(channel: string): Promise<string | undefined> {
+  const response = await fetch(`http://127.0.0.1:7822/api/runs/${runId}/commits`);
+  if (!response.ok) {
+    return undefined;
+  }
+  const commits = (await response.json()) as Array<Record<string, unknown>>;
+  const matching = commits.filter((commit) => commit.channel === channel);
+  return matching.at(-1)?.commitId as string | undefined;
 }
 
 main().catch((error) => {

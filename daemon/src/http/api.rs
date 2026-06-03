@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::sync::LazyLock;
 use std::time::Duration;
 
 use axum::extract::{Path, Query, State};
@@ -7,6 +8,7 @@ use axum::response::sse::{Event, KeepAlive, Sse};
 use axum::routing::{get, post};
 use axum::{Json, Router};
 use futures_util::Stream;
+use regex::Regex;
 use serde::Deserialize;
 use serde_json::{json, Value};
 use tokio::net::TcpListener;
@@ -38,6 +40,7 @@ pub async fn serve(listener: TcpListener, state: AppState) -> anyhow::Result<()>
         .route("/api/channels/:channel/snapshot", get(channel_snapshot))
         .route("/api/channels/:channel/deltas", get(channel_deltas))
         .route("/api/deltas", post(publish_delta))
+        .route("/api/events", post(universal_event))
         .route("/api/checkpoint", post(checkpoint))
         .route("/api/runs", get(runs))
         .route("/api/runs/:run_id/commits", get(run_commits))
@@ -201,6 +204,43 @@ async fn checkpoint(
             .into_iter()
             .map(SideEffectBody::into_proto)
             .collect(),
+    };
+    let response = state
+        .checkpoint_inner(request)
+        .await
+        .map_err(internal_error)?;
+    Ok(Json(json!({
+        "commitId": response.commit_id,
+        "deltaId": response.delta_id,
+        "accepted": response.accepted,
+        "persisted": response.persisted,
+        "warning": response.warning,
+        "redacted": response.redaction_report.map(|report| report.redacted).unwrap_or(false)
+    })))
+}
+
+async fn universal_event(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Json(value): Json<Value>,
+) -> ApiResult<Value> {
+    guard(&state, &headers)?;
+    let body = UniversalEventBody::try_from_value(&value)?;
+    let request = CheckpointRequest {
+        agent_id: body.agent_id,
+        run_id: body.run_id,
+        thread_id: body.thread_id,
+        channel: body.channel,
+        objective: String::new(),
+        payload: Some(payload_from_json(value)?),
+        parent_commit_ids: body.parent_commit_ids,
+        tags: body.tags,
+        summary: format!("{} {}", body.framework, body.event_type),
+        metadata: Some(metadata_from_value(body.metadata)),
+        tool_calls: Vec::new(),
+        tool_results: Vec::new(),
+        artifact_refs: Vec::new(),
+        external_side_effects: Vec::new(),
     };
     let response = state
         .checkpoint_inner(request)
@@ -434,6 +474,29 @@ fn metadata_from_map(map: HashMap<String, String>) -> Metadata {
     }
 }
 
+fn metadata_from_value(value: Value) -> Metadata {
+    let entries = value
+        .as_object()
+        .map(|object| {
+            object
+                .iter()
+                .map(|(key, value)| crate::generated::nexus::v1::KeyValue {
+                    key: key.clone(),
+                    value: value
+                        .as_str()
+                        .map(ToString::to_string)
+                        .unwrap_or_else(|| value.to_string()),
+                })
+                .collect()
+        })
+        .unwrap_or_default();
+    Metadata { entries }
+}
+
+pub fn validate_universal_event(value: &Value) -> Result<(), (StatusCode, String)> {
+    UniversalEventBody::try_from_value(value).map(|_| ())
+}
+
 fn commit_summary(commit: &Commit) -> Value {
     json!({
         "commitId": commit.commit_id,
@@ -588,6 +651,173 @@ struct CheckpointBody {
     #[serde(default)]
     metadata: HashMap<String, String>,
     external_side_effects: Option<Vec<SideEffectBody>>,
+}
+
+static CHANNEL_RE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"^[a-z][a-z0-9_]*:[A-Za-z0-9_.:\-*]+$").unwrap());
+static ID_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^[A-Za-z0-9_.:\-]+$").unwrap());
+
+#[derive(Debug)]
+struct UniversalEventBody {
+    run_id: String,
+    thread_id: String,
+    agent_id: String,
+    framework: String,
+    event_type: String,
+    channel: String,
+    tags: Vec<String>,
+    parent_commit_ids: Vec<String>,
+    metadata: Value,
+}
+
+impl UniversalEventBody {
+    fn try_from_value(value: &Value) -> Result<Self, (StatusCode, String)> {
+        let object = value.as_object().ok_or_else(|| {
+            (
+                StatusCode::BAD_REQUEST,
+                "UniversalAgentEvent must be a JSON object".to_string(),
+            )
+        })?;
+        let schema_version = required_string(
+            object,
+            "schema_version",
+            "UniversalAgentEvent.schema_version",
+        )?;
+        if schema_version != "nexus.universal.v1" {
+            return Err((
+                StatusCode::BAD_REQUEST,
+                "UniversalAgentEvent.schema_version must be nexus.universal.v1".to_string(),
+            ));
+        }
+        let run_id = required_id(object, "run_id")?;
+        let thread_id = required_id(object, "thread_id")?;
+        let agent_id = required_id(object, "agent_id")?;
+        required_id(object, "event_id")?;
+        let framework = required_string(object, "framework", "UniversalAgentEvent.framework")?;
+        if !matches!(
+            framework.as_str(),
+            "autogen"
+                | "crewai"
+                | "custom"
+                | "generic"
+                | "langgraph"
+                | "microsoft-agent-framework"
+                | "vercel-ai"
+        ) {
+            return Err((
+                StatusCode::BAD_REQUEST,
+                "UniversalAgentEvent.framework must be one of autogen, crewai, custom, generic, langgraph, microsoft-agent-framework, vercel-ai".to_string(),
+            ));
+        }
+        let event_type = required_string(object, "event_type", "UniversalAgentEvent.event_type")?;
+        if !matches!(
+            event_type.as_str(),
+            "run_start"
+                | "run_end"
+                | "step_start"
+                | "step_end"
+                | "node_start"
+                | "node_end"
+                | "task_start"
+                | "task_end"
+                | "tool_start"
+                | "tool_end"
+                | "stream_delta"
+                | "message_delta"
+                | "state_checkpoint"
+                | "error"
+                | "custom"
+        ) {
+            return Err((
+                StatusCode::BAD_REQUEST,
+                "UniversalAgentEvent.event_type is not supported by nexus.universal.v1".to_string(),
+            ));
+        }
+        let channel = required_string(object, "channel", "UniversalAgentEvent.channel")?;
+        if !CHANNEL_RE.is_match(&channel) {
+            return Err((
+                StatusCode::BAD_REQUEST,
+                "channel must match allowed Nexus channel pattern".to_string(),
+            ));
+        }
+        match object.get("timestamp_ms") {
+            Some(Value::Number(number)) if number.as_i64().is_some_and(|value| value > 0) => {}
+            _ => {
+                return Err((
+                    StatusCode::BAD_REQUEST,
+                    "timestamp_ms must be an integer Unix timestamp in milliseconds".to_string(),
+                ));
+            }
+        }
+        let tags = optional_string_array(object.get("tags"), "tags")?;
+        let parent_commit_ids =
+            optional_string_array(object.get("parent_commit_ids"), "parent_commit_ids")?;
+        let metadata = object
+            .get("metadata")
+            .cloned()
+            .unwrap_or_else(|| Value::Object(Default::default()));
+        if !metadata.is_object() {
+            return Err((
+                StatusCode::BAD_REQUEST,
+                "metadata must be an object".to_string(),
+            ));
+        }
+        Ok(Self {
+            run_id,
+            thread_id,
+            agent_id,
+            framework,
+            event_type,
+            channel,
+            tags,
+            parent_commit_ids,
+            metadata,
+        })
+    }
+}
+
+fn required_id(
+    object: &serde_json::Map<String, Value>,
+    field: &str,
+) -> Result<String, (StatusCode, String)> {
+    let value = required_string(object, field, &format!("UniversalAgentEvent.{field}"))?;
+    if !ID_RE.is_match(&value) {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            format!("UniversalAgentEvent.{field} contains invalid characters"),
+        ));
+    }
+    Ok(value)
+}
+
+fn required_string(
+    object: &serde_json::Map<String, Value>,
+    field: &str,
+    display: &str,
+) -> Result<String, (StatusCode, String)> {
+    match object.get(field) {
+        Some(Value::String(value)) if !value.is_empty() => Ok(value.clone()),
+        _ => Err((StatusCode::BAD_REQUEST, format!("{display} is required"))),
+    }
+}
+
+fn optional_string_array(
+    value: Option<&Value>,
+    field: &str,
+) -> Result<Vec<String>, (StatusCode, String)> {
+    match value {
+        None => Ok(Vec::new()),
+        Some(Value::Array(values)) if values.iter().all(|item| item.as_str().is_some()) => {
+            Ok(values
+                .iter()
+                .map(|item| item.as_str().unwrap_or_default().to_string())
+                .collect())
+        }
+        _ => Err((
+            StatusCode::BAD_REQUEST,
+            format!("{field} must be an array of commit ID strings"),
+        )),
+    }
 }
 
 #[derive(Debug, Deserialize)]

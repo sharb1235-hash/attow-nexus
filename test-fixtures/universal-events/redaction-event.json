@@ -1,0 +1,28 @@
+{
+  "schema_version": "nexus.universal.v1",
+  "sdk_name": "nexus-ipc",
+  "sdk_version": "0.1.0",
+  "adapter_name": "generic",
+  "adapter_version": "0.1.0",
+  "event_id": "evt_redaction",
+  "run_id": "contract-fixture-demo",
+  "thread_id": "main",
+  "agent_id": "redaction-worker",
+  "framework": "generic",
+  "language": "python",
+  "event_type": "state_checkpoint",
+  "channel": "state:contract-fixture-demo:main",
+  "input": {
+    "api_key": "sk-testsecretvalue1234567890",
+    "headers": {
+      "Authorization": "Bearer secret-token-value"
+    },
+    "password": "correct horse battery staple"
+  },
+  "metadata": {
+    "purpose": "redaction parity"
+  },
+  "tags": ["contract", "redaction"],
+  "parent_commit_ids": [],
+  "timestamp_ms": 1780476010000
+}

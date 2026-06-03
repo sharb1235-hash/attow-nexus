@@ -52,6 +52,12 @@ py -m pip install langgraph
 node scripts/audit/universal-demo-smoke.mjs
 ```
 
+Universal event contract smoke against a running daemon:
+
+```powershell
+node scripts/audit/contract-smoke.mjs
+```
+
 Optional custom levels:
 
 ```powershell
