@@ -9,6 +9,31 @@ Recommended output files:
 
 Do not commit a fake or empty binary recording. This placeholder exists so the README can link to the intended launch asset location while the repository is still private.
 
+## Generate the Recording
+
+Use the scripted pipeline in `scripts/demo`:
+
+```powershell
+cd <repo>
+cd scripts\demo
+npm.cmd install
+npx.cmd playwright install chromium
+cd ..\..
+npm.cmd --prefix scripts/demo run demo
+```
+
+The script writes the MP4 to `docs/assets/nexus-demo.mp4`. To also write a GIF:
+
+```powershell
+npm.cmd --prefix scripts/demo run demo:gif
+```
+
+If FFmpeg is missing, install it with:
+
+```powershell
+winget install Gyan.FFmpeg
+```
+
 ## 30-60 Second Recording Shot List
 
 1. Show `docker compose up --build` running the Nexus daemon.

@@ -242,6 +242,19 @@ Open the URL printed by Vite. If port 5173 is already in use, Vite may choose an
 
 The public launch demo should be recorded before the repo is made public. Use [docs/assets/nexus-demo.mp4](docs/assets/nexus-demo.mp4) and/or [docs/assets/nexus-demo.gif](docs/assets/nexus-demo.gif) for the final recording. The shot list lives in [docs/assets/README.md](docs/assets/README.md).
 
+Generate the real MP4 locally with the repeatable script in [scripts/demo](scripts/demo/README.md):
+
+```powershell
+cd <repo>
+cd scripts\demo
+npm.cmd install
+npx.cmd playwright install chromium
+cd ..\..
+npm.cmd --prefix scripts/demo run demo
+```
+
+The script requires the Docker daemon to already be running. It checks `/api/health`, captures real CLI and metrics output, starts the Vite dashboard dev server if needed, captures dashboard screenshots, and uses FFmpeg to write `docs/assets/nexus-demo.mp4`.
+
 ## Security Model
 
 Nexus binds locally by default. TCP mode requires bearer token authentication unless `NEXUS_REQUIRE_AUTH=false` is explicitly set for local development. SDKs and the daemon redact secrets before payloads are sent, broadcast, or persisted. UDS permissions are restricted to the current user on Unix-like systems.
