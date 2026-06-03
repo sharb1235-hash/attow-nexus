@@ -35,11 +35,12 @@ def main() -> None:
         },
         summary="Researcher added revenue finding",
         tags=["demo", "research"],
+        parent_commit_ids=[plan.commit_id],
     )
     print("created commits:", plan.commit_id, research.commit_id)
     print("try: nexus diff", plan.commit_id, research.commit_id)
+    print("try: nexus replay", research.commit_id)
 
 
 if __name__ == "__main__":
     main()
-

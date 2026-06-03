@@ -12,7 +12,7 @@ use client::HttpClient;
 use output::print_value;
 
 #[derive(Parser)]
-#[command(name = "nexus", version, about = "Nexus local coordination CLI")]
+#[command(name = "nexus", version, about = "Attow Nexus local coordination CLI")]
 struct Cli {
     #[arg(long, global = true)]
     json: bool,
@@ -144,7 +144,7 @@ async fn main() -> anyhow::Result<()> {
         Command::Daemon { command } => match command {
             DaemonCommand::Start => nexusd::run_from_env().await,
             DaemonCommand::Stop => {
-                println!("Nexus daemon stops with Ctrl-C or the hosting service manager.");
+                println!("Attow Nexus daemon stops with Ctrl-C or the hosting service manager.");
                 Ok(())
             }
         },

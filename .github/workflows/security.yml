@@ -7,6 +7,17 @@ on:
   workflow_dispatch:
 
 jobs:
+  secret-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   audits:
     runs-on: ubuntu-latest
     steps:
@@ -33,4 +44,3 @@ jobs:
         run: |
           python -m pip install pip-audit .
           pip-audit || true
-

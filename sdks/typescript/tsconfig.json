@@ -5,6 +5,7 @@
     "moduleResolution": "Bundler",
     "strict": true,
     "declaration": true,
+    "ignoreDeprecations": "6.0",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
@@ -13,4 +14,3 @@
   },
   "include": ["src", "tests"]
 }
-

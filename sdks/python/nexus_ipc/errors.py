@@ -3,9 +3,8 @@ class NexusError(RuntimeError):
 
 
 class NexusConnectionError(NexusError):
-    """Raised when the local Nexus daemon cannot be reached."""
+    """Raised when the local Attow Nexus daemon cannot be reached."""
 
 
 class NexusValidationError(NexusError):
     """Raised when SDK input validation fails before a daemon request."""
-

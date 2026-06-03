@@ -36,7 +36,7 @@ winget install Gyan.FFmpeg
 
 ## 30-60 Second Recording Shot List
 
-1. Show `docker compose up --build` running the Nexus daemon.
+1. Show `docker compose up --build` running the Attow Nexus daemon.
 2. Show API health returning ok from `http://127.0.0.1:7822/api/health`.
 3. Show metrics available at `http://127.0.0.1:7823/metrics`.
 4. Run `py examples\python-basic\main.py` and show the demo creating two durable commits.

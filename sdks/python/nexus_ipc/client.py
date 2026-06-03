@@ -107,6 +107,7 @@ class NexusClient:
         summary: str | None = None,
         tags: list[str] | None = None,
         objective: str | None = None,
+        parent_commit_ids: list[str] | None = None,
         metadata: dict[str, str] | None = None,
     ) -> CommitResult:
         clean_state, _ = redact(state)
@@ -119,6 +120,7 @@ class NexusClient:
             summary=summary,
             tags=tags or [],
             objective=objective,
+            parent_commit_ids=parent_commit_ids or [],
             metadata=metadata or {},
         )
         response = self._post("/api/checkpoint", request.model_dump())
@@ -201,4 +203,3 @@ class NexusClient:
         except urllib.error.URLError as exc:
             raise NexusConnectionError(str(exc)) from exc
         return json.loads(payload.decode("utf-8")) if payload else None
-

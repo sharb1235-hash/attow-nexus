@@ -7,10 +7,9 @@ version = "0.1.0"
 edition = "2021"
 license = "Apache-2.0"
 authors = ["Nexus Contributors"]
-repository = "https://github.com/nexus-ipc/nexus"
-homepage = "https://github.com/nexus-ipc/nexus"
+repository = "https://github.com/sharb1235-hash/attow-nexus"
+homepage = "https://github.com/sharb1235-hash/attow-nexus"
 description = "A local coordination daemon and Git-like state ledger for polyglot AI agents."
 
 [workspace.lints.rust]
 unsafe_code = "forbid"
-

@@ -17,7 +17,7 @@ export function Layout() {
   return (
     <div className="shell">
       <aside className="sidebar">
-        <div className="brand">Nexus</div>
+        <div className="brand">Attow Nexus</div>
         <nav>
           {links.map(([to, label]) => (
             <NavLink key={to} to={to} end={to === "/"}>
@@ -30,4 +30,3 @@ export function Layout() {
     </div>
   );
 }
-

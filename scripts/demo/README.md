@@ -1,6 +1,6 @@
-# Nexus Launch Demo Video
+# Attow Nexus Launch Demo Video
 
-This directory contains the repeatable local pipeline for creating the public launch demo video.
+This directory contains the repeatable local pipeline for creating the Attow Nexus public launch demo video.
 
 The script captures real local daemon output, CLI output, dashboard screenshots, and generated title/caption slides, then assembles them into:
 

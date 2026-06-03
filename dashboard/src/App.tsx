@@ -39,7 +39,7 @@ export function Home() {
     <main className="view-grid">
       <section className="hero-band">
         <div>
-          <p className="eyebrow">Nexus Console</p>
+          <p className="eyebrow">Attow Nexus Console</p>
           <h1>Local agent coordination</h1>
           <p className="summary-line">
             {health?.status === "ok" ? "Daemon online" : "Daemon unreachable"} · {health?.protocolVersion ?? "nexus.v1"}
@@ -63,4 +63,3 @@ export function Home() {
     </main>
   );
 }
-

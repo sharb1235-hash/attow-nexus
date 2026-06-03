@@ -8,9 +8,8 @@ The DAG supports multiple roots, multiple parents, ancestry traversal, nearest c
 
 Diff compares state keys, summaries, tags, tool calls, tool results, artifacts, side effects, and metadata.
 
-Replay reconstructs captured logical state from root to a selected commit. The default mode is `state_only`. `dry_run_tools` does not call external tools. `reexecute_tools` requires explicit confirmation.
+Replay reconstructs captured logical state along the selected commit's ancestry. It does not merge all independent roots in a run unless parent links connect them. The default mode is `state_only`. `dry_run_tools` does not call external tools. `reexecute_tools` requires explicit confirmation.
 
 Rollback moves a head pointer and creates a rollback marker event. History is not deleted.
 
 External side effects are logged as irreversible unless an adapter provides a compensating action.
-

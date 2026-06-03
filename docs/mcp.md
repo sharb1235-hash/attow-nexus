@@ -1,6 +1,8 @@
 # MCP
 
-The optional MCP bridge is enabled with `NEXUS_MCP_ENABLED=true`.
+The optional MCP bridge is experimental.
+
+Current code describes the local tool/resource surface and can be enabled with `NEXUS_MCP_ENABLED=true` where supported, but it has not yet been verified as a full MCP server runtime against a host in CI. Treat it as an early integration surface, not a production MCP deployment.
 
 Tools:
 
@@ -23,4 +25,3 @@ Resources:
 - `nexus://commits/{commit_id}`
 
 The bridge is local-only by default.
-

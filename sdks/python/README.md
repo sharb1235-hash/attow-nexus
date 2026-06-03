@@ -1,6 +1,6 @@
 # nexus-ipc
 
-Python SDK for Nexus, the local coordination daemon and Git-like state ledger for polyglot agents.
+Python SDK for Attow Nexus, the local coordination daemon and Git-like state ledger for polyglot agents.
 
 ```python
 from nexus_ipc import NexusClient
@@ -24,4 +24,3 @@ print(commit.commit_id)
 ```
 
 The SDK redacts secrets before sending payloads to the daemon.
-

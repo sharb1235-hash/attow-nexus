@@ -8,15 +8,15 @@ Terminal 1:
 
 ```powershell
 cd C:\Users\Sharb\Documents
-git clone https://github.com/sharb1235-hash/nexus.git nexus-clean-test
-cd nexus-clean-test
+git clone https://github.com/sharb1235-hash/attow-nexus.git attow-nexus-clean-test
+cd attow-nexus-clean-test
 docker compose up --build
 ```
 
 Terminal 2:
 
 ```powershell
-cd C:\Users\Sharb\Documents\nexus-clean-test
+cd C:\Users\Sharb\Documents\attow-nexus-clean-test
 curl.exe http://127.0.0.1:7822/api/health
 curl.exe http://127.0.0.1:7823/metrics
 cd sdks\python
@@ -31,7 +31,7 @@ cargo run -p nexus -- log --run demo-run
 Terminal 3:
 
 ```powershell
-cd C:\Users\Sharb\Documents\nexus-clean-test\dashboard
+cd C:\Users\Sharb\Documents\attow-nexus-clean-test\dashboard
 npm.cmd install
 npm.cmd run dev
 ```
@@ -44,15 +44,15 @@ Terminal 1:
 
 ```bash
 cd ~/Documents
-git clone https://github.com/sharb1235-hash/nexus.git nexus-clean-test
-cd nexus-clean-test
+git clone https://github.com/sharb1235-hash/attow-nexus.git attow-nexus-clean-test
+cd attow-nexus-clean-test
 docker compose up --build
 ```
 
 Terminal 2:
 
 ```bash
-cd ~/Documents/nexus-clean-test
+cd ~/Documents/attow-nexus-clean-test
 curl http://127.0.0.1:7822/api/health
 curl http://127.0.0.1:7823/metrics
 cd sdks/python
@@ -67,7 +67,7 @@ cargo run -p nexus -- log --run demo-run
 Terminal 3:
 
 ```bash
-cd ~/Documents/nexus-clean-test/dashboard
+cd ~/Documents/attow-nexus-clean-test/dashboard
 npm install
 npm run dev
 ```

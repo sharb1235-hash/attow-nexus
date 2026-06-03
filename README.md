@@ -1,14 +1,18 @@
-# Nexus
+# Attow Nexus
 
-[![CI](https://github.com/sharb1235-hash/nexus/actions/workflows/ci.yml/badge.svg)](https://github.com/sharb1235-hash/nexus/actions/workflows/ci.yml)
-[![Security](https://github.com/sharb1235-hash/nexus/actions/workflows/security.yml/badge.svg)](https://github.com/sharb1235-hash/nexus/actions/workflows/security.yml)
+[![CI](https://github.com/sharb1235-hash/attow-nexus/actions/workflows/ci.yml/badge.svg)](https://github.com/sharb1235-hash/attow-nexus/actions/workflows/ci.yml)
+[![Security](https://github.com/sharb1235-hash/attow-nexus/actions/workflows/security.yml/badge.svg)](https://github.com/sharb1235-hash/attow-nexus/actions/workflows/security.yml)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+
+**Git for AI agent state.**
 
 **A local coordination daemon and Git-like state ledger for polyglot AI agents.**
 
+Built by Attow as part of a local-first AI infrastructure stack.
+
 Not another agent framework - the shared state substrate underneath them.
 
-Nexus-IPC is a local coordination daemon for polyglot AI agents. NexusLedger is the Git-like state history built on top of it. Nexus Console is the live debugger and dashboard. Together, they let agents share state in real time while giving developers replay, rollback, diffing, loop detection, and debugging for every important state transition.
+Nexus-IPC is a local coordination daemon for polyglot AI agents. NexusLedger is the Git-like state history built on top of it. Attow Nexus Console is the live debugger and dashboard. Together, they let agents share state in real time while giving developers replay, rollback, diffing, loop detection, and debugging for every important state transition.
 
 ## 60-Second Quickstart
 
@@ -37,7 +41,7 @@ cargo run -p nexus -- channels
 cargo run -p nexus -- log --run demo-run
 ```
 
-Terminal 3 - run Nexus Console in Vite dev mode:
+Terminal 3 - run Attow Nexus Console in Vite dev mode:
 
 ```powershell
 cd <repo>\dashboard
@@ -82,7 +86,7 @@ npm run dev
 
 ## Local Endpoints
 
-Docker Compose starts the Nexus daemon, HTTP API, and metrics endpoint. It does not currently serve the production React dashboard at `/`.
+Docker Compose starts the Attow Nexus daemon, HTTP API, and metrics endpoint. It does not currently serve the production React dashboard at `/`.
 
 - API health: [http://127.0.0.1:7822/api/health](http://127.0.0.1:7822/api/health)
 - Metrics: [http://127.0.0.1:7823/metrics](http://127.0.0.1:7823/metrics)
@@ -108,6 +112,9 @@ Docker Compose starts the Nexus daemon, HTTP API, and metrics endpoint. It does 
 - Framework adapters are early and should use public hooks, callbacks, middleware, checkpointers, or explicit wrappers.
 - The MCP bridge is optional and experimental where enabled.
 - Local cluster mode is experimental where present.
+- Windows named pipe transport is represented by configuration and a documented TCP fallback; use loopback TCP on Windows for the current MVP.
+- RocksDB store support is feature-gated and not verified as a working alternative store in this launch pass.
+- OpenTelemetry and encryption-at-rest flags are configuration surfaces, not fully verified runtime systems in this MVP.
 - APIs may change before v1.0.
 - Security hardening is local-first/dev-first; remote use needs a deployment-specific review.
 - Cloud and team features are roadmap only.
@@ -124,7 +131,7 @@ flowchart LR
   IPC --> LEDGER["NexusLedger append-only DAG"]
   LEDGER --> SQLITE["SQLite WAL store"]
   LEDGER --> ART["Artifact store"]
-  IPC --> CONSOLE["Nexus Console"]
+  IPC --> CONSOLE["Attow Nexus Console"]
   IPC --> MCP["Optional MCP bridge"]
 ```
 
@@ -134,19 +141,19 @@ flowchart LR
 
 **NexusLedger** is the durable Git-like state graph. Durable deltas become content-addressed commits that can be diffed, replayed, forked, exported, and inspected.
 
-**Nexus Console** is the local dashboard. It shows connected agents, active channels, recent deltas, commit history, tool calls, loop warnings, replay output, fork controls, rollback warnings, and metrics.
+**Attow Nexus Console** is the local dashboard. It shows connected agents, active channels, recent deltas, commit history, tool calls, loop warnings, replay output, fork controls, rollback warnings, and metrics.
 
-## Why Nexus Exists
+## Why Attow Nexus Exists
 
-Agent frameworks are good at orchestration inside one application. Real systems often have multiple agents, languages, runtimes, local processes, and tools. Nexus provides the shared local substrate beneath agent frameworks so they can coordinate through versioned protocol messages and durable logical agent state.
+Agent frameworks are good at orchestration inside one application. Real systems often have multiple agents, languages, runtimes, local processes, and tools. Attow Nexus provides the shared local substrate beneath agent frameworks so they can coordinate through versioned protocol messages and durable logical agent state.
 
 ## Why Not Just LangGraph Memory?
 
-LangGraph memory and checkpointing are excellent for LangGraph applications. Nexus is not trying to replace framework-native memory, persistence, or orchestration.
+LangGraph memory and checkpointing are excellent for LangGraph applications. Attow Nexus is not trying to replace framework-native memory, persistence, or orchestration.
 
-Nexus is useful when logical agent state spans multiple frameworks, languages, runtimes, local processes, tools, or custom workers. It acts as a neutral local state bus plus Git-like ledger underneath agent frameworks, so LangGraph, CrewAI, AutoGen, Microsoft Agent Framework, custom Python workers, TypeScript services, and other processes can coordinate without all adopting the same application framework.
+Attow Nexus is useful when logical agent state spans multiple frameworks, languages, runtimes, local processes, tools, or custom workers. It acts as a neutral local state bus plus Git-like ledger underneath agent frameworks, so LangGraph, CrewAI, AutoGen, Microsoft Agent Framework, custom Python workers, TypeScript services, and other processes can coordinate without all adopting the same application framework.
 
-The intended relationship is complementary: keep using the framework-native memory that works best inside each app, and use Nexus when shared structured state deltas, durable commits, cross-process observability, diffing, replay, and rollback of captured logical state need to cross framework boundaries.
+The intended relationship is complementary: keep using the framework-native memory that works best inside each app, and use Attow Nexus when shared structured state deltas, durable commits, cross-process observability, diffing, replay, and rollback of captured logical state need to cross framework boundaries.
 
 ## Install
 
@@ -157,6 +164,8 @@ docker compose up --build
 ```
 
 Docker exposes the HTTP API at `http://127.0.0.1:7822` and metrics at `http://127.0.0.1:7823`. The React dashboard is run separately from `dashboard/` during development.
+
+The Docker Compose demo binds the daemon to `0.0.0.0` inside the container with auth disabled for local development, but publishes host ports only on `127.0.0.1`. Do not change those host port bindings to public interfaces without enabling auth and reviewing the security model.
 
 Cargo:
 
@@ -226,7 +235,7 @@ console.log(commit.commitId);
 
 ## Dashboard
 
-![Nexus Console smoke test](docs/nexus-console-smoke.png)
+![Attow Nexus Console smoke test](docs/nexus-console-smoke.png)
 
 The console is a Vite/React app in `dashboard/`. During development on Windows PowerShell:
 
@@ -257,7 +266,7 @@ The script requires the Docker daemon to already be running. It checks `/api/hea
 
 ## Security Model
 
-Nexus binds locally by default. TCP mode requires bearer token authentication unless `NEXUS_REQUIRE_AUTH=false` is explicitly set for local development. SDKs and the daemon redact secrets before payloads are sent, broadcast, or persisted. UDS permissions are restricted to the current user on Unix-like systems.
+Attow Nexus binds locally by default. TCP mode requires bearer token authentication unless `NEXUS_REQUIRE_AUTH=false` is explicitly set for local development. SDKs and the daemon redact secrets before payloads are sent, broadcast, or persisted. UDS permissions are restricted to the current user on Unix-like systems.
 
 Remote binding requires `NEXUS_ALLOW_REMOTE=true` and should be paired with token management, network controls, and a deployment-specific security review.
 
@@ -267,11 +276,15 @@ Rollback moves NexusLedger head pointers for captured logical state. It does not
 
 ## Framework Integrations
 
-Nexus integrates through public hooks, callbacks, middleware, checkpointers, and explicit wrappers. The Python SDK includes generic, LangGraph, CrewAI, AutoGen, and Microsoft Agent Framework helpers. The TypeScript SDK includes generic, LangGraph JS, and AutoGen-style helpers.
+Attow Nexus integrates through public hooks, callbacks, middleware, checkpointers, and explicit wrappers. The Python SDK includes generic, LangGraph, CrewAI, AutoGen, and Microsoft Agent Framework wrapper helpers. The TypeScript SDK includes generic, LangGraph JS, and AutoGen-style wrapper helpers.
+
+The framework-specific helpers are not verified deep integrations with pinned framework packages yet. They are designed as explicit public-boundary wrappers that complement framework-native persistence instead of replacing it. See [docs/adapters.md](docs/adapters.md).
 
 ## MCP Bridge
 
-Set `NEXUS_MCP_ENABLED=true` to expose local-only MCP tools and resources:
+The MCP bridge is experimental. Current code describes the tool/resource surface and local configuration; a full MCP host runtime handshake is not yet verified in CI. Set `NEXUS_MCP_ENABLED=true` only for local experiments.
+
+Planned local-only tools and resources include:
 
 - `nexus_list_runs`
 - `nexus_list_agents`
@@ -300,7 +313,7 @@ The benchmark reports p50/p95/p99 publish latency, durable checkpoint latency sa
 3. Agent B publishes research.
 4. Agent C receives research and drafts output.
 5. NexusLedger records durable commits.
-6. Nexus Console shows the live Agent Bus.
+6. Attow Nexus Console shows the live Agent Bus.
 7. A repeated tool failure triggers a loop warning.
 8. A developer diffs the bad commit against the last stable commit.
 9. A developer forks from the stable commit and resumes from corrected state.

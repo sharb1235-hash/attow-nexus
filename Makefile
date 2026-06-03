@@ -1,4 +1,4 @@
-.PHONY: dev daemon cli test lint dashboard docker proto bench
+.PHONY: dev daemon cli test lint dashboard docker proto bench audit
 
 dev:
 	cargo run -p nexus -- daemon start
@@ -31,3 +31,7 @@ proto:
 bench:
 	cargo run -p nexus -- bench local --events 10000 --payload-size 4096
 
+audit:
+	cargo audit
+	cd dashboard && npm.cmd audit
+	cd sdks/typescript && npm.cmd audit

@@ -1,6 +1,8 @@
 use std::net::SocketAddr;
 use std::sync::Arc;
 
+use axum::http::{HeaderMap, HeaderValue, StatusCode};
+use nexusd::auth::token;
 use nexusd::bus::Bus;
 use nexusd::config::Config;
 use nexusd::generated::nexus::v1::{
@@ -93,7 +95,9 @@ async fn register_publish_diff_replay_fork_and_rollback() {
             thread_id: String::new(),
             channel: "topic:research".to_string(),
             objective: "test".to_string(),
-            payload: Some(json_payload(r#"{"step":1,"finding":"a"}"#)),
+            payload: Some(json_payload(
+                r#"{"step":1,"finding":"a","plan":"find source"}"#,
+            )),
             parent_commit_ids: Vec::new(),
             tags: vec!["research".to_string()],
             summary: "first".to_string(),
@@ -143,6 +147,11 @@ async fn register_publish_diff_replay_fork_and_rollback() {
         })
         .unwrap();
     assert_eq!(replay.provenance_commit_ids.len(), 2);
+    let replay_payload = replay.reconstructed_state.unwrap();
+    let replay_state: serde_json::Value = serde_json::from_slice(&replay_payload.data).unwrap();
+    assert_eq!(replay_state["step"], 2);
+    assert_eq!(replay_state["finding"], "b");
+    assert_eq!(replay_state["plan"], "find source");
 
     let fork = state
         .fork_inner(nexusd::generated::nexus::v1::ForkRequest {
@@ -218,6 +227,7 @@ async fn redaction_and_artifacts_are_applied() {
         .await
         .unwrap();
     assert!(response.redaction_report.unwrap().redacted);
+    assert_eq!(state.metrics.summary().nexus_artifacts_total, 1);
     let commit = state
         .store
         .get_commit(&response.commit_id)
@@ -246,6 +256,37 @@ fn dag_rejects_cycles_and_remote_bind_is_rejected() {
     let mut config = test_config(&dir);
     config.grpc_addr = SocketAddr::from(([0, 0, 0, 0], 7821));
     assert!(config.validate_network_policy().is_err());
+}
+
+#[test]
+fn http_bearer_token_auth_accepts_only_expected_token() {
+    let dir = tempfile::tempdir().unwrap();
+    let mut config = test_config(&dir);
+    config.require_auth = true;
+    config.auth_token = Some("audit-token".to_string());
+
+    let headers = HeaderMap::new();
+    assert_eq!(
+        token::validate_http(&headers, &config),
+        Err(StatusCode::UNAUTHORIZED)
+    );
+
+    let mut wrong = HeaderMap::new();
+    wrong.insert(
+        axum::http::header::AUTHORIZATION,
+        HeaderValue::from_static("Bearer wrong-token"),
+    );
+    assert_eq!(
+        token::validate_http(&wrong, &config),
+        Err(StatusCode::FORBIDDEN)
+    );
+
+    let mut correct = HeaderMap::new();
+    correct.insert(
+        axum::http::header::AUTHORIZATION,
+        HeaderValue::from_static("Bearer audit-token"),
+    );
+    assert!(token::validate_http(&correct, &config).is_ok());
 }
 
 fn delta(durable: bool, channel: &str, json: &str) -> StateDelta {

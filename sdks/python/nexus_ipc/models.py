@@ -54,6 +54,7 @@ class CheckpointRequest(BaseModel):
     summary: str | None = None
     tags: list[str] = Field(default_factory=list)
     objective: str | None = None
+    parent_commit_ids: list[str] = Field(default_factory=list)
     metadata: dict[str, str] = Field(default_factory=dict)
 
     @field_validator("channel")
@@ -113,4 +114,3 @@ class RunContext:
             run_id=self.run_id,
             **kwargs,
         )
-

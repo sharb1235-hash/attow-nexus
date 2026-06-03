@@ -84,6 +84,7 @@ export class NexusClient {
       state: clean,
       summary: parsed.summary,
       objective: parsed.objective,
+      parent_commit_ids: parsed.parentCommitIds,
       tags: parsed.tags,
       metadata: parsed.metadata,
     });
@@ -171,4 +172,3 @@ export class NexusClient {
     return (text ? JSON.parse(text) : null) as T;
   }
 }
-

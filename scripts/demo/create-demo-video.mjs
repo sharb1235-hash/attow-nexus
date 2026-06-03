@@ -180,14 +180,14 @@ async function requireDaemon() {
   try {
     response = await fetch(`${apiBase}/api/health`, { signal: AbortSignal.timeout(3000) });
   } catch {
-    throw new Error("Nexus daemon is not reachable. Run docker compose up --build first.");
+    throw new Error("Attow Nexus daemon is not reachable. Run docker compose up --build first.");
   }
   if (!response.ok) {
-    throw new Error(`Nexus daemon health check failed with HTTP ${response.status}. Run docker compose up --build first.`);
+    throw new Error(`Attow Nexus daemon health check failed with HTTP ${response.status}. Run docker compose up --build first.`);
   }
   const health = await response.json();
   if (health.status !== "ok") {
-    throw new Error(`Nexus daemon is reachable but not healthy: ${JSON.stringify(health)}`);
+    throw new Error(`Attow Nexus daemon is reachable but not healthy: ${JSON.stringify(health)}`);
   }
   return health;
 }
@@ -346,7 +346,7 @@ async function renderSlides(browser, context) {
     {
       name: "01-title.png",
       html: titleSlide(
-        "Nexus",
+        "Attow Nexus",
         "Git for AI agent state",
         "Local coordination daemon + Git-like ledger for polyglot AI agents"
       )
@@ -465,7 +465,7 @@ async function assembleGif() {
 function titleSlide(title, subtitle, kicker) {
   return baseHtml(`
     <section class="center">
-      <div class="mark">Nexus Demo</div>
+      <div class="mark">Attow Nexus Demo</div>
       <h1>${escapeHtml(title)}</h1>
       <h2>${escapeHtml(subtitle)}</h2>
       <p>${escapeHtml(kicker)}</p>
@@ -496,7 +496,7 @@ function dashboardSlide(homePath, agentsPath, ledgerPath) {
     <section class="slide">
       <div class="header">
         <div>
-          <p class="eyebrow">Nexus Console</p>
+          <p class="eyebrow">Attow Nexus Console</p>
           <h1>Live agent bus + ledger observability</h1>
         </div>
         <div class="chips"><span>2 connected agents</span><span>2 active channels</span><span>2 recent commits</span></div>

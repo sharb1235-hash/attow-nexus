@@ -1,1 +1,1 @@
-pub const ABOUT: &str = "Start or stop the local Nexus daemon.";
+pub const ABOUT: &str = "Start or stop the local Attow Nexus daemon.";

@@ -1,6 +1,6 @@
 # Multi-Agent Demo
 
-Planner, researcher, and writer coordinate through one local Nexus daemon.
+Planner, researcher, and writer coordinate through one local Attow Nexus daemon.
 
 ```bash
 NEXUS_REQUIRE_AUTH=false nexus daemon start
@@ -8,5 +8,4 @@ NEXUS_REQUIRE_AUTH=false nexus daemon start
 nexus log --run multi-agent-demo
 ```
 
-The scripts intentionally repeat a failing tool summary so Nexus emits a loop warning after repeated durable commits.
-
+The scripts intentionally repeat a failing tool summary so Attow Nexus emits a loop warning after repeated durable commits.

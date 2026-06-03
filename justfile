@@ -29,3 +29,7 @@ proto:
 bench:
   cargo run -p nexus -- bench local --events 10000 --payload-size 4096
 
+audit:
+  cargo audit
+  cd dashboard; npm.cmd audit
+  cd sdks/typescript; npm.cmd audit

@@ -402,7 +402,7 @@ fn guard(state: &AppState, headers: &HeaderMap) -> Result<(), (StatusCode, Strin
     token::validate_http(headers, &state.config).map_err(|status| {
         (
             status,
-            "request is not authorized for this local Nexus daemon".to_string(),
+            "request is not authorized for this local Attow Nexus daemon".to_string(),
         )
     })
 }

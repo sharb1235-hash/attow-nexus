@@ -1,0 +1,45 @@
+# Feature Verification Matrix
+
+| Area | Feature | Claimed behavior | Actual implementation | Verification method | Status | Evidence | Notes |
+|---|---|---|---|---|---|---|---|
+| Repository | Attow Nexus branding | Public-facing docs use Attow Nexus | README/docs/dashboard/demo labels updated | `rg` scan for old repo URL and README inspection | VERIFIED | README title and badges use `attow-nexus` | Package/import names intentionally unchanged |
+| Repository | CLI remains `nexus` | Command remains `nexus` | Clap command name remains `nexus` | Code inspection and CLI runtime | VERIFIED | `cargo run -p nexus -- status` passed | Public product name changed only in descriptions |
+| Docker | Daemon/API/metrics startup | Docker Compose starts daemon | Compose builds image and starts container | `docker compose up --build -d`; curl health/metrics | VERIFIED | Health `status: ok`; metrics available | Used `-d` for automation |
+| Docker | Dashboard serving | Docker does not bundle dashboard UI | Docker exposes API/metrics only | README + runtime behavior | VERIFIED | Dashboard verified separately through Vite | `http://127.0.0.1:7822/` is not the React app |
+| Nexus daemon/API | Health | API reports daemon status | `/api/health` returns version/protocol/auth/bind info | `curl.exe /api/health` | VERIFIED | Returned `daemonVersion 0.1.0`, `protocolVersion nexus.v1` | `localOnly` false in Docker due container bind |
+| Nexus daemon/API | Agent registration | Agents register with metadata/capabilities | HTTP and internal gRPC service paths exist | Python demo, Rust tests | VERIFIED | Python demo registered planner/researcher | Presence stays online in MVP |
+| Nexus-IPC bus | Channels | Channels lazily tracked | Bus tracks channels/publishers/counts | CLI `channels`, Rust tests | VERIFIED | `topic:plan`, `topic:research` shown | Subscription graph is basic |
+| Nexus-IPC bus | Pub/sub | Subscribers receive matching deltas | In-memory subscription registry with pattern match | Rust test `subscription_filters_and_backpressure_work` | VERIFIED | Test checks matching and non-matching channels | Runtime CLI subscribe not manually exercised |
+| Nexus-IPC bus | Backpressure | Bounded queues drop according to policy | Bounded queue and dropped counter exist | Rust test | PARTIAL | Test asserts dropped count >= 1 | Dashboard only shows aggregate dropped metric |
+| Nexus-IPC bus | Heartbeats/stale/offline | Agent presence lifecycle | Presence registry stores online/stale/offline concepts | Code inspection | PARTIAL | Bus exposes agent info with last seen timestamp | No runtime stale/offline test observed |
+| NexusLedger | Durable commits | Checkpoints persist commits | SQLite commit table + append path | Python demo, CLI log, Rust tests | VERIFIED | Demo created two commits; stress created 610 audit commits | SQLite WAL setup exists |
+| NexusLedger | Commit IDs | Content-addressed commit IDs | BLAKE3 hash over encoded commit content | Code inspection | VERIFIED | `daemon/src/ledger/commit.rs` | Delta ID/time differences mean repeat submissions differ |
+| NexusLedger | DAG/head | Parent/child DAG and heads | In-memory DAG + SQLite heads | Rust tests and Python demo | PARTIAL | Explicit parent chain tested; demo now links researcher commit to planner commit | Independent roots in the same run are still not merged automatically |
+| NexusLedger | Diff | Compare two commits | JSON payload diff plus metadata/count diffs | CLI diff runtime | VERIFIED | Six changes shown between demo commits | Not semantic/tool-aware beyond counts |
+| NexusLedger | Replay | Reconstruct logical state | Merges ancestry payloads | CLI replay runtime; Rust tests | PARTIAL | Replay follows parent-linked demo ancestry | Independent roots in same run are not merged |
+| NexusLedger | Fork | New run/branch from commit | Sets new run head and appends event | Rust tests | PARTIAL | `fork_inner` test passes | Dashboard UX is minimal |
+| NexusLedger | Rollback | Move head pointer, warn side effects | Validates ancestor unless force, appends event | Rust tests | PARTIAL | `rollback_inner` test passes | Runtime CLI not manually tested in this audit |
+| NexusLedger | External side effects | Log/warn irreversible effects | Proto/model and rollback warning path exist | Code inspection | PARTIAL | `external_side_effects` supported in checkpoint body | No live side-effect adapter test |
+| NexusLedger | Artifacts | Store large payloads | SQLite artifact table and file store | Rust test | VERIFIED | Redaction/artifact test retrieves stored artifact | Compression behavior not separately measured |
+| CLI | Status/agents/channels/log | Inspect daemon state | HTTP client commands | Runtime commands | VERIFIED | All commands passed | `cargo run` adds build noise |
+| CLI | Diff/replay | Compare/replay commits | HTTP API commands | Runtime commands | VERIFIED | Demo diff/replay passed | Fork/rollback not manually run |
+| Python SDK | Connect/register/checkpoint | SDK talks to daemon | HTTP client implementation | Editable install, pytest, Python demo | VERIFIED | `py examples/python-basic/main.py` passed | Tests mostly use fake client |
+| Python SDK | Redaction | SDK redacts secrets | Recursive redaction helpers | pytest | VERIFIED | 10 Python tests passed including redaction | Runtime daemon also redacts |
+| Python SDK | Async client | Async wrapper works | `asyncio.to_thread` wrapper | pytest | VERIFIED | `test_async_client.py` passed | Not a native async HTTP stack |
+| Python SDK | Framework adapters | Public hook/wrapper helpers | Generic wrapper and small helper functions | Code/tests | PARTIAL | Generic + LangGraph helper tests pass | No real framework packages installed/tested |
+| TypeScript SDK | Build/test | Package builds and tests pass | tsup + vitest | `npm.cmd run build`, `npm.cmd test` | VERIFIED | Build and 6 tests passed | Runtime example also passed |
+| TypeScript SDK | Runtime example | Example can create commit and receive update | File dependency package example | `npm.cmd run start` | VERIFIED | Created commit `c_e852...` | Example README still uses generic npm/bash wording |
+| TypeScript SDK | Framework adapters | Generic/LangGraph/AutoGen wrappers | Lightweight wrappers | Code/tests | PARTIAL | Generic adapter test passes | No real framework integration test |
+| Dashboard | Build | React/Vite builds | TypeScript + Vite | `npm.cmd run build`; `npm.cmd audit` | VERIFIED | Build passed; audit reports zero vulnerabilities | Uses dashboard dev server in MVP |
+| Dashboard | Real data | UI polls daemon API | `api.ts` uses `/api` paths and components poll | Code inspection, dev server probe | VERIFIED | Vite dev served; API client real | UI coverage is basic |
+| Dashboard | Diff/replay/fork/rollback pages | Operator controls | Form pages call API | Code inspection | PARTIAL | Components exist | UX and validation are minimal |
+| Metrics | Prometheus endpoint | Counters reflect runtime | Metrics counters increment in bus/persist/artifact paths | Runtime metrics before/after demo/stress | VERIFIED | 617 commits after smoke/stress run; artifact metric increased 0 to 1 in threshold smoke | Latency metrics are counters/placeholders, not histograms |
+| Demo video | Real MP4 | Captures real outputs and screenshots | Playwright + ffmpeg script | `npm.cmd --prefix scripts/demo run demo` | VERIFIED | MP4 created, 45 seconds, non-empty | Requires fresh/exact demo state |
+| Security | Redaction | SDK and daemon redact common secrets | Python/TS/daemon redactors | Tests and code inspection | VERIFIED | Python/TS tests + Rust artifact/redaction test | Secret scan only regex-based |
+| Security | Auth defaults | TCP requires token unless disabled | Config validation | Code inspection, Docker runtime, auth smoke script | PARTIAL | Config enforces token for TCP by default; auth smoke script added | Docker disables auth for local demo |
+| Security | Remote bind guard | Reject non-loopback unless allowed | Config validation | Rust test | VERIFIED | Remote bind rejection test passes | Docker sets allow remote inside container |
+| Protocol | Buf lint | Proto lint passes | Buf config | `npx.cmd @bufbuild/buf lint` | VERIFIED | Command passed | Breaking check only in CI |
+| MCP | MCP bridge | Local MCP tools/resources | Static bridge info only | Code inspection | EXPERIMENTAL | `bridge_info` lists names | No MCP host handshake verified |
+| Cluster | Local cluster | Single-primary architecture | Config/struct placeholders | Code inspection | EXPERIMENTAL | Cluster modules are skeletal | No runtime forwarding verified |
+| Windows IPC | Named pipe | Windows named pipe support | Fallback message only | Code inspection | DOCUMENTATION ONLY | `named_pipe.rs` says TCP fallback | Do not market as implemented |
+| RocksDB | Optional store | Optional high-throughput store | Feature gate/error path | Code inspection | DOCUMENTATION ONLY | `rocks_store.rs` returns feature error | No store implementation verified |

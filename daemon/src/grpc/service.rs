@@ -342,6 +342,7 @@ impl AppState {
             payload.size_bytes = artifact.size_bytes;
             payload.compressed = artifact.compressed;
             artifact_refs.push(artifact);
+            self.metrics.artifacts_total.inc();
         }
         Ok((payload, redaction_report, artifact_refs))
     }

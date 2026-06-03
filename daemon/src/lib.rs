@@ -54,10 +54,10 @@ pub async fn run(config: Config) -> anyhow::Result<()> {
         http_addr = %config.http_addr,
         metrics_addr = %config.metrics_addr,
         bind_mode = %config.bind_mode,
-        "starting Nexus daemon"
+        "starting Attow Nexus daemon"
     );
     println!(
-        "Nexus daemon listening locally: gRPC {}, HTTP {}, metrics {}",
+        "Attow Nexus daemon listening locally: gRPC {}, HTTP {}, metrics {}",
         config.grpc_addr, config.http_addr, config.metrics_addr
     );
 

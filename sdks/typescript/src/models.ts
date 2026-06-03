@@ -39,6 +39,7 @@ export const checkpointSchema = z.object({
   summary: z.string().optional(),
   tags: z.array(z.string()).default([]),
   objective: z.string().optional(),
+  parentCommitIds: z.array(z.string()).default([]),
   metadata: z.record(z.string()).default({}),
 });
 
@@ -60,4 +61,3 @@ export interface ForkResult {
   runId: string;
   headCommitId: string;
 }
-

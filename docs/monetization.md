@@ -1,6 +1,6 @@
 # Monetization
 
-Nexus follows an OSS-core strategy.
+Attow Nexus follows an OSS-core strategy.
 
 Free open-source core:
 
@@ -19,4 +19,3 @@ Paid options for teams and companies:
 - Support plans
 - Compliance and audit packages
 - Production alerting and incident replay
-

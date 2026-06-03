@@ -1,12 +1,26 @@
 # Adapters
 
-Adapters use public integration surfaces only.
+Adapters are public wrapper helpers for recording structured state deltas, checkpoints, tool calls, and errors. They are intentionally conservative: Attow Nexus does not monkeypatch private framework internals by default.
 
-The generic adapter wraps any callable or async function and records input, output, and errors.
+Use framework-native memory, checkpointers, callbacks, and orchestration where they already work well. Use Attow Nexus wrappers when state needs to cross frameworks, languages, runtimes, tools, or custom workers.
 
-The LangGraph helpers wrap public node functions and record node transitions. They do not replace LangGraph persistence.
+## Verification Status
 
-CrewAI helpers record crew start, task start, task result, role, and task events where application code calls the helper.
+| Adapter | Current status | Integration style | Verified against framework package |
+| --- | --- | --- | --- |
+| Generic Python | Working helper | Wrap callable agent steps and tools | N/A |
+| Generic TypeScript | Working helper | Wrap async functions and tools | N/A |
+| LangGraph Python | Early wrapper helper | User-called node/checkpoint helper using public app code boundaries | Not yet |
+| CrewAI Python | Early wrapper helper | User-called crew/task helper using public app code boundaries | Not yet |
+| AutoGen Python | Early wrapper helper | Middleware-style/user-called recorder | Not yet |
+| Microsoft Agent Framework Python | Early wrapper helper | Middleware-style/user-called recorder | Not yet |
+| LangGraph JS | Early wrapper helper | User-called node helper | Not yet |
+| AutoGen JS | Early wrapper helper | Middleware-style/user-called recorder | Not yet |
 
-AutoGen and Microsoft Agent Framework helpers use middleware-style recording and explicit wrappers.
+## Guidance
 
+- Prefer explicit wrappers around node functions, tasks, tools, callbacks, or middleware.
+- Do not rely on private framework attributes or undocumented lifecycle methods.
+- Keep framework-native persistence enabled when the framework needs it.
+- Record external side effects as irreversible unless your application also supplies a compensating action.
+- Treat the framework-specific helpers as examples until they are tested against pinned framework versions in CI.

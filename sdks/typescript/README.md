@@ -1,6 +1,6 @@
 # @nexus-ipc/sdk
 
-TypeScript SDK for Nexus, the local coordination daemon and Git-like state ledger for polyglot agents.
+TypeScript SDK for Attow Nexus, the local coordination daemon and Git-like state ledger for polyglot agents.
 
 ```ts
 import { NexusClient } from "@nexus-ipc/sdk";
@@ -24,4 +24,3 @@ console.log(commit.commitId);
 ```
 
 Payloads are redacted before they are sent to the daemon.
-
