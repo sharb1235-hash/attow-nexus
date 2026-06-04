@@ -3,6 +3,7 @@
 [![CI](https://github.com/sharb1235-hash/attow-nexus/actions/workflows/ci.yml/badge.svg)](https://github.com/sharb1235-hash/attow-nexus/actions/workflows/ci.yml)
 [![Security](https://github.com/sharb1235-hash/attow-nexus/actions/workflows/security.yml/badge.svg)](https://github.com/sharb1235-hash/attow-nexus/actions/workflows/security.yml)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+[![Discord](https://img.shields.io/badge/Discord-Join%20community-5865F2?logo=discord&logoColor=white)](https://discord.gg/MxFXAEvRtE)
 
 **Git for AI agent state.**
 
@@ -448,6 +449,11 @@ The benchmark reports p50/p95/p99 publish latency, durable checkpoint latency sa
 ## Roadmap
 
 Attow Nexus is local-first developer infrastructure. Near-term roadmap work focuses on SDK ergonomics, public wrapper adapters, replay/diff UX, dashboard polish, storage and observability hardening, local trusted-machine coordination, and clearer docs for safe use with captured logical state. See [ROADMAP.md](ROADMAP.md).
+
+## Community & Support
+
+- **Have a question or hitting a bug?** Open a [GitHub Issue](https://github.com/sharb1235-hash/attow-nexus/issues).
+- **Want to talk architecture or get help live?** Join the [Attow Discord Community](https://discord.gg/MxFXAEvRtE) to connect with other developers building local-first agent infrastructure.
 
 ## Contributing
 
