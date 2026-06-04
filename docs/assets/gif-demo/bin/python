@@ -1,0 +1,13 @@
+#!/usr/bin/env sh
+if [ "$1" != "run_agent.py" ]; then
+  echo "demo helper only supports: python run_agent.py" >&2
+  exit 2
+fi
+
+cat <<'EOF'
+[CrewAI] Executing Tool: search_web...
+[LangGraph] State Transition -> Thread #402
+[Vercel AI SDK] Streaming UI payload...
+[ERROR] Recursive tool loop detected. Maximum context exceeded.
+Run crashed.
+EOF

@@ -1,0 +1,45 @@
+#!/usr/bin/env sh
+case "$*" in
+  "log --run broken-agent-demo")
+    cat <<'EOF'
+* commit f829a1b (HEAD) [vercel-ai] Malformed tool token output
+* commit c391b02        [crewai] Recursive tool loop initialized
+* commit a109d84        [langgraph] Planning stage verified
+* commit e210c44        [initial] Thread initialized
+EOF
+    ;;
+  "diff a109d84 f829a1b")
+    cat <<'EOF'
+--- good state
++++ bad state
+
+  "is_looping": false
+  "recursion_depth": 1
+
+- "is_looping": false
+- "recursion_depth": 1
++ "is_looping": true
++ "recursion_depth": 14
+EOF
+    ;;
+  "replay a109d84")
+    cat <<'EOF'
+[REPLAY] Reconstructing logical state from a109d84...
+[OK] Last good state restored
+[OK] Workflow resumed
+[SUCCESS] Recovery commit recorded: d441a92
+EOF
+    ;;
+  "about")
+    cat <<'EOF'
+ATTOW NEXUS v0.1
+Rust daemon + local SQLite ledger
+Log. Diff. Replay. Recover.
+Zero cloud. Zero API keys.
+EOF
+    ;;
+  *)
+    echo "demo helper only supports selected nexus walkthrough commands" >&2
+    exit 2
+    ;;
+esac

@@ -5,6 +5,14 @@
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![Discord](https://img.shields.io/badge/Discord-Join%20community-5865F2?logo=discord&logoColor=white)](https://discord.gg/MxFXAEvRtE)
 
+<p align="center">
+  <img src="docs/assets/attow-nexus-debug-demo.gif" alt="Attow Nexus animated terminal walkthrough showing an agent crash, state log, diff, replay, and recovery" width="900">
+</p>
+
+<p align="center">
+  <em>Animated walkthrough: capture a bad agent state, diff it, replay from the last good commit, and recover locally.</em>
+</p>
+
 **Git for AI agent state.**
 
 **A local coordination daemon and Git-like state ledger for polyglot AI agents.**
