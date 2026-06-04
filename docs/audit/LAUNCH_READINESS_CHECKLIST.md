@@ -19,6 +19,9 @@
 
 - [ ] Run `docs/clean-clone-test.md` from a fresh clone.
 - [ ] Confirm repository URL uses `https://github.com/sharb1235-hash/attow-nexus.git`.
+- [ ] Confirm `scripts/setup.ps1` and `scripts/setup.sh` are used for the first-run path.
+- [ ] Confirm setup scripts assume Docker is already running in Terminal 1.
+- [ ] Confirm setup scripts do not require API keys and run the universal demo by default.
 
 ## Docker
 
@@ -34,6 +37,10 @@
 - [x] Python SDK editable install passed.
 - [x] Python SDK tests passed.
 - [x] Python demo created two commits.
+- [ ] `py examples\broken-agent-recovery\run_demo.py` passed against a fresh Docker daemon.
+- [ ] `node scripts\audit\broken-agent-demo-smoke.mjs` passed against a fresh Docker daemon.
+- [ ] `.\scripts\setup.ps1 -NoDashboard` passed against a fresh Docker daemon.
+- [ ] `./scripts/setup.sh --no-dashboard` passed against a fresh Docker daemon on macOS/Linux or CI.
 - [x] TypeScript SDK install/build/test passed.
 - [x] TypeScript basic example ran against daemon.
 - [x] Clearly label framework adapters as wrapper helpers unless verified with actual frameworks.

@@ -1,0 +1,8 @@
+{
+  "service": "toy-worker",
+  "retry_limit": 5,
+  "timeout_seconds": 30,
+  "feature_flags": {
+    "safe_mode": true
+  }
+}

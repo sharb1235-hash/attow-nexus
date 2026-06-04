@@ -13,3 +13,15 @@ Replay reconstructs captured logical state along the selected commit's ancestry.
 Rollback moves a head pointer and creates a rollback marker event. History is not deleted.
 
 External side effects are logged as irreversible unless an adapter provides a compensating action.
+
+## Broken Agent Recovery Demo
+
+The `examples/broken-agent-recovery` demo is the launch proof for "Git for AI agent state." It creates a local multi-agent commit graph:
+
+- `planner-agent` creates the last good plan commit.
+- `coder-agent` creates a bad config commit with `retry_limit: "five"`.
+- `reviewer-agent` creates a validation-failure commit.
+- `coder-agent` creates a recovery commit parented to the last good commit.
+- `reviewer-agent` creates a final validation-passed commit.
+
+The bad commit is never deleted. Developers can run `nexus diff` to see the invalid transition and `nexus replay` to reconstruct the captured logical state before resuming from a fixed commit. Replay and recovery apply only to captured logical state; they do not automatically reverse external side effects.

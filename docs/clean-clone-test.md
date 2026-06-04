@@ -17,26 +17,30 @@ Terminal 2:
 
 ```powershell
 cd C:\Users\Sharb\Documents\attow-nexus-clean-test
-curl.exe http://127.0.0.1:7822/api/health
-curl.exe http://127.0.0.1:7823/metrics
-cd sdks\python
-py -m pip install -e .
-cd ..\..
-py examples\python-basic\main.py
-cargo run -p nexus -- agents
-cargo run -p nexus -- channels
-cargo run -p nexus -- log --run demo-run
+.\scripts\setup.ps1
 ```
 
-Terminal 3:
+If PowerShell blocks local scripts:
 
 ```powershell
-cd C:\Users\Sharb\Documents\attow-nexus-clean-test\dashboard
-npm.cmd install
-npm.cmd run dev
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\setup.ps1
 ```
 
-Open the Vite URL printed by `npm.cmd run dev`.
+Open the Vite URL printed by `.\scripts\setup.ps1`.
+
+For a nonblocking validation run that skips the dashboard dev server:
+
+```powershell
+.\scripts\setup.ps1 -NoDashboard
+```
+
+If PowerShell blocks local scripts:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\setup.ps1 -NoDashboard
+```
+
+The setup script assumes Docker is already running in Terminal 1. It does not require API keys, installs the Python SDK in editable mode, runs the universal demo by default, prints CLI inspection output, and starts the Vite dashboard unless `-NoDashboard` is provided.
 
 ## macOS/Linux
 
@@ -53,23 +57,16 @@ Terminal 2:
 
 ```bash
 cd ~/Documents/attow-nexus-clean-test
-curl http://127.0.0.1:7822/api/health
-curl http://127.0.0.1:7823/metrics
-cd sdks/python
-python3 -m pip install -e .
-cd ../..
-python3 examples/python-basic/main.py
-cargo run -p nexus -- agents
-cargo run -p nexus -- channels
-cargo run -p nexus -- log --run demo-run
+chmod +x scripts/setup.sh
+./scripts/setup.sh
 ```
 
-Terminal 3:
+Open the Vite URL printed by `./scripts/setup.sh`.
+
+For a nonblocking validation run that skips the dashboard dev server:
 
 ```bash
-cd ~/Documents/attow-nexus-clean-test/dashboard
-npm install
-npm run dev
+./scripts/setup.sh --no-dashboard
 ```
 
-Open the Vite URL printed by `npm run dev`.
+The setup script assumes Docker is already running in Terminal 1. It does not require API keys, installs the Python SDK in editable mode, runs the universal demo by default, prints CLI inspection output, and starts the Vite dashboard unless `--no-dashboard` is provided.

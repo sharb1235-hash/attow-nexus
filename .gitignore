@@ -16,3 +16,4 @@ nexus.sqlite*
 coverage/
 scripts/demo/out/*
 !scripts/demo/out/.gitkeep
+examples/broken-agent-recovery/out/

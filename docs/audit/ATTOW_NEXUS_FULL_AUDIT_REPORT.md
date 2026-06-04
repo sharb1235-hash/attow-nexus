@@ -36,6 +36,7 @@ The product can be launched honestly as an early local-first developer preview i
 - LangGraph, CrewAI-style, and Vercel AI SDK-style wrapper adapters translate into a shared `UniversalAgentEvent` schema for `run_id=universal-demo`.
 - Canonical universal event fixtures cover valid events, parent chains, large payload behavior, redaction, and malformed inputs.
 - `POST /api/events` accepts canonical snake_case `UniversalAgentEvent` JSON and turns it into durable commits through the same ledger path.
+- The broken agent recovery demo creates a deterministic local bad transition, shows the last good commit and bad commit, then resumes from a recovery commit parented to the last good logical state.
 
 ## What Is Partial
 
@@ -119,6 +120,8 @@ nexus_commits_total 2
 ```
 
 After CLI/artifact/stress smoke scripts, metrics showed 617 durable deltas/commits and zero daemon errors. The final demo-video run resets Docker back to the clean two-commit story.
+
+The `examples/broken-agent-recovery` demo validates the flagship "Git for AI agent state" story: diff the bad transition, replay the last good state, and recover through a fixed commit without claiming external side-effect rollback.
 
 ## Command Ledger
 

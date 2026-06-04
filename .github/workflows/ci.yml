@@ -34,6 +34,16 @@ jobs:
           buf breaking --against "https://github.com/${{ github.repository }}.git#branch=main" || \
           echo "Skipping breaking check because main branch is not available yet"
 
+  scripts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup script checks
+        run: |
+          test -f scripts/setup.ps1
+          test -f scripts/setup.sh
+          bash -n scripts/setup.sh
+
   python:
     runs-on: ubuntu-latest
     defaults:
@@ -87,4 +97,3 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: docker build -t nexus:ci .
-

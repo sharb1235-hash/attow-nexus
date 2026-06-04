@@ -2,7 +2,7 @@ import { spawn, spawnSync } from "node:child_process";
 import { existsSync } from "node:fs";
 import fs from "node:fs/promises";
 import path from "node:path";
-import { fileURLToPath, pathToFileURL } from "node:url";
+import { fileURLToPath } from "node:url";
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(scriptDir, "../..");
@@ -126,6 +126,7 @@ async function main() {
       commitB
     });
     await assembleMp4(slides);
+    await extractDashboardPreview();
     if (makeGif) {
       await assembleGif();
     }
@@ -344,8 +345,8 @@ async function captureDashboardScreens(browser, dashboardUrl) {
   for (const [name, route] of routes) {
     const file = path.join(outDir, `dashboard-${name}.png`);
     await page.goto(`${dashboardUrl}${route}`, { waitUntil: "domcontentloaded" });
+    await waitForDashboardRouteData(page, name);
     await page.waitForTimeout(1000);
-    await page.waitForTimeout(1200);
     await page.screenshot({ path: file, fullPage: false });
     screenshots[name] = file;
   }
@@ -353,7 +354,32 @@ async function captureDashboardScreens(browser, dashboardUrl) {
   return screenshots;
 }
 
+async function waitForDashboardRouteData(page, routeName) {
+  const expectedByRoute = {
+    home: ["Connected agents", "researcher", "planner", "Active channels", "topic:plan", "topic:research", "Recent commits"],
+    agents: ["researcher", "planner"],
+    channels: ["topic:plan", "topic:research"],
+    ledger: ["Recent commits", "topic:plan", "topic:research"]
+  };
+  const expectedText = expectedByRoute[routeName] ?? [];
+  if (expectedText.length === 0) {
+    return;
+  }
+  try {
+    await page.waitForFunction(
+      (values) => values.every((value) => document.body.innerText.includes(value)),
+      expectedText,
+      { timeout: 10000 }
+    );
+  } catch {
+    throw new Error(
+      `Dashboard did not load expected demo data on ${routeName} before screenshot capture: ${expectedText.join(", ")}`
+    );
+  }
+}
+
 async function renderSlides(browser, context) {
+  const dashboardHtml = await dashboardSlide(context.screenshots.home, context.screenshots.agents, context.screenshots.ledger);
   const slideDefs = [
     {
       name: "01-title.png",
@@ -399,7 +425,8 @@ async function renderSlides(browser, context) {
     },
     {
       name: "06-dashboard.png",
-      html: dashboardSlide(context.screenshots.home, context.screenshots.agents, context.screenshots.ledger)
+      html: dashboardHtml,
+      validateImages: true
     },
     {
       name: "07-closing.png",
@@ -414,17 +441,52 @@ async function renderSlides(browser, context) {
   const slides = [];
   for (const def of slideDefs) {
     const file = path.join(outDir, def.name);
-    await renderHtml(browser, def.html, file);
+    await renderHtml(browser, def.html, file, { validateImages: Boolean(def.validateImages) });
     slides.push(file);
   }
   return slides;
 }
 
-async function renderHtml(browser, html, file) {
+async function renderHtml(browser, html, file, options = {}) {
   const page = await browser.newPage({ viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1 });
   await page.setContent(html, { waitUntil: "load" });
+  if (options.validateImages) {
+    await validateLoadedImages(page);
+  }
   await page.screenshot({ path: file, fullPage: false });
   await page.close();
+}
+
+async function validateLoadedImages(page) {
+  await page.evaluate(async () => {
+    const images = Array.from(document.images);
+    await Promise.all(
+      images.map((image) => {
+        if (image.complete) {
+          return Promise.resolve();
+        }
+        return new Promise((resolve) => {
+          image.addEventListener("load", resolve, { once: true });
+          image.addEventListener("error", resolve, { once: true });
+        });
+      })
+    );
+  });
+
+  const brokenImages = await page.evaluate(() =>
+    Array.from(document.images)
+      .filter((image) => image.naturalWidth === 0 || image.naturalHeight === 0)
+      .map((image) => image.currentSrc || image.src || image.alt || "unknown image")
+  );
+  if (brokenImages.length > 0) {
+    throw new Error(
+      [
+        "Demo video render aborted: broken image asset detected in dashboard scene.",
+        "Broken assets:",
+        ...brokenImages
+      ].join("\n")
+    );
+  }
 }
 
 async function assembleMp4(slides) {
@@ -458,6 +520,27 @@ async function assembleMp4(slides) {
       cwd: repoRoot,
       label: "ffmpeg assemble mp4",
       outFile: "ffmpeg-mp4.txt"
+    }
+  );
+}
+
+async function extractDashboardPreview() {
+  await runCapture(
+    "ffmpeg",
+    [
+      "-y",
+      "-ss",
+      "36",
+      "-i",
+      mp4Path,
+      "-frames:v",
+      "1",
+      path.join(outDir, "dashboard-scene-preview.png")
+    ],
+    {
+      cwd: repoRoot,
+      label: "ffmpeg extract dashboard scene preview",
+      outFile: "ffmpeg-dashboard-preview.txt"
     }
   );
 }
@@ -503,7 +586,12 @@ function terminalSlide(title, command, text, chips = []) {
   `);
 }
 
-function dashboardSlide(homePath, agentsPath, ledgerPath) {
+async function dashboardSlide(homePath, agentsPath, ledgerPath) {
+  const [homeSrc, agentsSrc, ledgerSrc] = await Promise.all([
+    imageDataUri(homePath),
+    imageDataUri(agentsPath),
+    imageDataUri(ledgerPath)
+  ]);
   return baseHtml(`
     <section class="slide">
       <div class="header">
@@ -514,14 +602,22 @@ function dashboardSlide(homePath, agentsPath, ledgerPath) {
         <div class="chips"><span>2 connected agents</span><span>2 active channels</span><span>2 recent commits</span></div>
       </div>
       <div class="dashboard-grid">
-        <img class="large-shot" src="${pathToFileURL(homePath).href}" />
+        <img class="large-shot" src="${homeSrc}" alt="Nexus Console overview screenshot" />
         <div class="stack">
-          <img src="${pathToFileURL(agentsPath).href}" />
-          <img src="${pathToFileURL(ledgerPath).href}" />
+          <img src="${agentsSrc}" alt="Nexus Console agents screenshot" />
+          <img src="${ledgerSrc}" alt="Nexus Console ledger screenshot" />
         </div>
       </div>
     </section>
   `);
+}
+
+async function imageDataUri(file) {
+  const data = await fs.readFile(file);
+  if (data.length === 0) {
+    throw new Error(`Dashboard screenshot is empty: ${file}`);
+  }
+  return `data:image/png;base64,${data.toString("base64")}`;
 }
 
 function baseHtml(body) {

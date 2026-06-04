@@ -16,7 +16,7 @@ Nexus-IPC is a local coordination daemon for polyglot AI agents. NexusLedger is 
 
 ## 60-Second Quickstart
 
-These commands are written for Windows PowerShell. They use `curl.exe`, `py`, `py -m pip`, and `npm.cmd` to avoid common PATH and PowerShell execution-policy issues.
+Get the Attow Nexus local daemon, universal demo, and dashboard running with two terminals.
 
 Terminal 1 - keep this running:
 
@@ -25,64 +25,93 @@ cd <repo>
 docker compose up --build
 ```
 
-Terminal 2 - verify the daemon/API and run the demo:
+Terminal 2 on Windows PowerShell:
 
 ```powershell
 cd <repo>
-curl.exe http://127.0.0.1:7822/api/health
-curl.exe http://127.0.0.1:7823/metrics
-cd sdks\python
-py -m pip install -e .
-cd ..\..
-py examples\python-basic\main.py
-cargo run -p nexus -- status
-cargo run -p nexus -- agents
-cargo run -p nexus -- channels
-cargo run -p nexus -- log --run demo-run
+.\scripts\setup.ps1
 ```
 
-Terminal 3 - run Attow Nexus Console in Vite dev mode:
+If your PowerShell execution policy blocks local scripts, run:
 
 ```powershell
-cd <repo>\dashboard
-npm.cmd install
-npm.cmd run dev
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\setup.ps1
+```
+
+Terminal 2 on macOS/Linux:
+
+```bash
+cd <repo>
+chmod +x scripts/setup.sh
+./scripts/setup.sh
 ```
 
 Browser:
 
-Open the Vite URL printed by `npm.cmd run dev`. It is usually `http://127.0.0.1:5173` or `http://127.0.0.1:5174` if 5173 is already in use.
+Open the Vite Local URL printed by the setup script, usually `http://127.0.0.1:5173` or `http://127.0.0.1:5174`.
 
-For macOS/Linux, the equivalent flow is:
+The setup script checks the API and metrics, installs the local Python SDK in editable mode, runs the no-key universal translation demo, runs the TypeScript/Vercel-style demo, prints CLI inspection output, and starts the Vite dashboard server. No cloud account or API key is required.
 
-```bash
-cd <repo>
-docker compose up --build
-```
+Docker Compose runs the daemon/API/metrics in Terminal 1. The dashboard runs separately through Vite dev mode from `dashboard/`.
 
-In another terminal:
+## Inspecting the Substrate Natively
 
-```bash
-cd <repo>
-curl http://127.0.0.1:7822/api/health
-curl http://127.0.0.1:7823/metrics
-cd sdks/python
-python3 -m pip install -e .
-cd ../..
-python3 examples/python-basic/main.py
+These commands are not required for the quickstart. They are useful when you want to inspect the local daemon, ledger, and CLI directly.
+
+Windows PowerShell:
+
+```powershell
+curl.exe http://127.0.0.1:7822/api/health
+curl.exe http://127.0.0.1:7823/metrics
 cargo run -p nexus -- status
 cargo run -p nexus -- agents
 cargo run -p nexus -- channels
-cargo run -p nexus -- log --run demo-run
+cargo run -p nexus -- log --run universal-demo
+cargo run -p nexus -- diff <commit_a> <commit_b>
+cargo run -p nexus -- replay <commit_b>
 ```
 
-And for the dashboard:
+macOS/Linux:
 
 ```bash
-cd <repo>/dashboard
-npm install
-npm run dev
+curl http://127.0.0.1:7822/api/health
+curl http://127.0.0.1:7823/metrics
+cargo run -p nexus -- status
+cargo run -p nexus -- agents
+cargo run -p nexus -- channels
+cargo run -p nexus -- log --run universal-demo
+cargo run -p nexus -- diff <commit_a> <commit_b>
+cargo run -p nexus -- replay <commit_b>
 ```
+
+## Broken Agent Recovery Demo
+
+When an agent crashes at step 14, stop rerunning steps 1-13. This demo shows a local multi-agent workflow producing a bad state transition, Nexus identifying the bad commit, the developer diffing/replaying the last good state, and the workflow recovering from a fixed commit.
+
+Git gave developers version control for code. Attow Nexus gives developers version control for agent state.
+
+Terminal 1:
+
+```powershell
+docker compose up --build
+```
+
+Terminal 2:
+
+```powershell
+py -m pip install -e sdks\python
+py examples\broken-agent-recovery\run_demo.py
+```
+
+Then inspect with the commit IDs printed by the script:
+
+```powershell
+cargo run -p nexus -- log --run broken-agent-demo
+cargo run -p nexus -- diff <last_good_commit> <bad_commit>
+cargo run -p nexus -- replay <final_commit>
+```
+
+The demo is deterministic and local: no LLM calls, no API keys, and no cloud services. Nexus replays captured logical state. It does not automatically undo real-world side effects such as file writes, emails, API calls, purchases, deployments, or database mutations unless an adapter provides compensating actions.
 
 ## Local Endpoints
 

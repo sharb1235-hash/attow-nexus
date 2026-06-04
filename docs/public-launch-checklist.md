@@ -9,9 +9,13 @@ Use this checklist before making the Attow Nexus GitHub repository public.
 - [ ] Confirm Docker Compose starts.
 - [ ] Confirm `/api/health` works.
 - [ ] Confirm `/metrics` works.
-- [ ] Confirm Python demo works.
+- [ ] Confirm `.\scripts\setup.ps1 -NoDashboard` works on Windows against Docker already running in Terminal 1.
+- [ ] Confirm `./scripts/setup.sh --no-dashboard` works on macOS/Linux against Docker already running in Terminal 1.
+- [ ] Confirm the setup scripts require no API keys and run the universal demo by default.
+- [ ] Confirm Python demo works if using the `-Basic` / `--basic` fallback path.
 - [ ] Confirm CLI `status`, `agents`, `channels`, and `log` work.
 - [ ] Confirm dashboard opens from Vite.
+- [ ] Confirm the README quickstart still says Docker runs daemon/API/metrics and the dashboard runs separately from Vite.
 - [ ] Record demo GIF/MP4.
 - [ ] Review README for overclaims.
 - [ ] Confirm MCP bridge, local cluster mode, Windows named pipe transport, RocksDB store, framework adapters, OpenTelemetry, and encryption-at-rest are labeled experimental or unverified where applicable.
