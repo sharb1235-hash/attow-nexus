@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "TypeScript SDK for Nexus-IPC.",
   "license": "Apache-2.0",
+  "author": "Attow, Inc.",
   "type": "module",
   "main": "dist/index.cjs",
   "module": "dist/index.js",

@@ -2,6 +2,7 @@
   "name": "attow-nexus-launch-video",
   "version": "0.1.0",
   "private": true,
+  "author": "Attow, Inc.",
   "type": "module",
   "scripts": {
     "render": "node node_modules/@remotion/cli/remotion-cli.js render src/index.tsx AttowNexusLaunch ../../docs/assets/attow-nexus-launch.mp4 --codec=h264 --quality=90",

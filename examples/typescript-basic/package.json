@@ -1,6 +1,7 @@
 {
   "name": "nexus-typescript-basic",
   "private": true,
+  "author": "Attow, Inc.",
   "type": "module",
   "scripts": {
     "start": "tsx src/index.ts"
@@ -10,4 +11,3 @@
     "tsx": "^4.19.0"
   }
 }
-

@@ -68,17 +68,20 @@
 
 - [x] README title says Attow Nexus.
 - [x] README includes `Git for AI agent state.`
-- [x] README includes Attow attribution line.
+- [x] README includes Attow, Inc. attribution line.
 - [x] GitHub URLs point to `sharb1235-hash/attow-nexus`.
 - [x] Docker/dashboard wording separates API/metrics from Vite dashboard.
 - [x] Clean clone docs use `attow-nexus-clean-test`.
 - [x] Review docs for MCP/cluster/adapter overclaims before public launch.
+- [x] Privacy disclosure added for local runtime and optional launch analytics.
+- [x] Launch analytics setup docs added for Koala/RB2B, Scarf, and Common Room.
+- [x] README keeps Scarf as optional, not the primary install path.
 
 ## License / NOTICE
 
 - [x] Apache-2.0 license present.
-- [ ] NOTICE file is absent. Not necessarily required, but decide whether Attow wants one.
-- [ ] Consider updating copyright holder from `Nexus Contributors` if Attow requires it.
+- [x] NOTICE file exists.
+- [x] Copyright holder updated to `Attow, Inc.`.
 
 ## Demo Asset
 
@@ -97,10 +100,15 @@
 - [ ] `cargo audit` not run locally in this final pass; security workflow installs it.
 - [x] CI secret scanning added with gitleaks.
 - [ ] Remote use needs explicit review.
+- [ ] If using Koala/RB2B, install pixel only on owned docs/landing site, not local dashboard.
+- [ ] If using Scarf, keep direct raw GitHub fallback documented.
+- [ ] If using Common Room, grant only required GitHub scopes.
+- [ ] Confirm no tracking secrets, OAuth credentials, or private tokens are committed.
 
 ## Release
 
 - [ ] Keep repository private until CI is green.
+- [ ] Keep repository private until launch analytics/privacy disclosure has been reviewed.
 - [ ] Resolve/disclose P0/P1 audit findings.
 - [ ] Tag `v0.1.0` only after clean clone test passes.
 - [ ] Publish packages only on manual release trigger if intended.

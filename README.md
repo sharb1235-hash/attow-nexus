@@ -8,7 +8,7 @@
 
 **A local coordination daemon and Git-like state ledger for polyglot AI agents.**
 
-Built by Attow as part of a local-first AI infrastructure stack.
+Built by Attow, Inc. as part of a local-first AI infrastructure stack.
 
 One local daemon, one ledger, one CLI, three framework surfaces feeding the same run.
 
@@ -55,6 +55,8 @@ Open the Vite Local URL printed by the setup script, usually `http://127.0.0.1:5
 The setup script checks the API and metrics, installs the local Python SDK in editable mode, runs the no-key universal translation demo, runs the TypeScript/Vercel-style demo, prints CLI inspection output, and starts the Vite dashboard server. No cloud account or API key is required.
 
 Docker Compose runs the daemon/API/metrics in Terminal 1. The dashboard runs separately through Vite dev mode from `dashboard/`.
+
+Attow Nexus does not collect daemon, CLI, SDK, or local dashboard runtime telemetry in v0.1. See [PRIVACY.md](PRIVACY.md) for the local-runtime privacy boundary and optional public launch analytics disclosure.
 
 ## Inspecting the Substrate Natively
 
@@ -297,6 +299,24 @@ TypeScript:
 npm install @nexus-ipc/sdk
 ```
 
+### Optional One-Line Installer
+
+The clone-based setup above is the primary quickstart. After the repository is public, Attow, Inc. may also offer an optional Scarf Gateway link for measuring open-source setup interest.
+
+macOS/Linux optional tracked link:
+
+```bash
+curl -fsSL <SCARF_SETUP_SH_URL> | bash
+```
+
+Direct GitHub fallback:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/sharb1235-hash/attow-nexus/main/scripts/setup.sh | bash
+```
+
+Review `scripts/setup.sh` before piping it into `bash`. On Windows, prefer the clone-based `.\scripts\setup.ps1` flow rather than remote PowerShell execution.
+
 ## Python Example
 
 ```python
@@ -383,6 +403,8 @@ Attow Nexus binds locally by default. TCP mode requires bearer token authenticat
 
 Remote binding requires `NEXUS_ALLOW_REMOTE=true` and should be paired with token management, network controls, and a deployment-specific security review.
 
+Privacy and attribution details are documented in [PRIVACY.md](PRIVACY.md). Public docs or landing pages may use disclosed marketing analytics, but the local runtime remains no-cloud and no-API-key by default.
+
 ## Rollback Limitations
 
 Rollback moves NexusLedger head pointers for captured logical state. It does not reverse external side effects. Emails, database writes, API calls, transactions, messages, file writes, deployments, purchases, and similar actions are logged as irreversible unless an adapter provides a compensating action.
@@ -433,7 +455,9 @@ The benchmark reports p50/p95/p99 publish latency, durable checkpoint latency sa
 
 ## Public Launch
 
-Keep the GitHub repository private until CI is green. Use [docs/public-launch-checklist.md](docs/public-launch-checklist.md) and [docs/clean-clone-test.md](docs/clean-clone-test.md) before switching visibility to public.
+Keep the GitHub repository private until CI is green. Use [docs/public-launch-checklist.md](docs/public-launch-checklist.md), [docs/clean-clone-test.md](docs/clean-clone-test.md), and [docs/company-launch-checklist.md](docs/company-launch-checklist.md) before switching visibility to public.
+
+Launch attribution setup is documented in [docs/launch-analytics-setup.md](docs/launch-analytics-setup.md), [docs/scarf-setup.md](docs/scarf-setup.md), [docs/web-pixel-setup.md](docs/web-pixel-setup.md), and [docs/common-room-setup.md](docs/common-room-setup.md). Tracking is optional, disclosed, and must not be added to the local daemon, CLI, SDKs, or dashboard runtime.
 
 ## Cloud Roadmap
 
@@ -445,4 +469,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md). Protobuf schemas are governed by Buf; fi
 
 ## License
 
-Apache-2.0. See [LICENSE](LICENSE).
+Apache-2.0. See [LICENSE](LICENSE) and [NOTICE](NOTICE).

@@ -9,6 +9,9 @@
 **/.mypy_cache/
 **/.venv/
 .env
+.env.*
+!.env.example
+!.env.launch.example
 .DS_Store
 *.log
 .nexus/

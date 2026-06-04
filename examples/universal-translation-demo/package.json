@@ -2,6 +2,7 @@
   "name": "attow-nexus-universal-translation-demo",
   "version": "0.1.0",
   "private": true,
+  "author": "Attow, Inc.",
   "type": "module",
   "scripts": {
     "vercel-demo": "tsx vercel_ai_frontend_agent.ts"

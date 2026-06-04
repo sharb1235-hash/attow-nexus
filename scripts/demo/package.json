@@ -2,6 +2,7 @@
   "name": "nexus-demo-video",
   "version": "0.1.0",
   "private": true,
+  "author": "Attow, Inc.",
   "type": "module",
   "scripts": {
     "demo": "node create-demo-video.mjs",
