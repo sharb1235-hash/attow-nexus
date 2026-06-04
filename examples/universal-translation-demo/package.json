@@ -5,7 +5,11 @@
   "author": "Attow, Inc.",
   "type": "module",
   "scripts": {
+    "prevercel-demo": "npm --prefix ../../sdks/typescript install && npm --prefix ../../sdks/typescript run build",
     "vercel-demo": "tsx vercel_ai_frontend_agent.ts"
+  },
+  "dependencies": {
+    "@nexus-ipc/sdk": "file:../../sdks/typescript"
   },
   "devDependencies": {
     "tsx": "^4.20.4",

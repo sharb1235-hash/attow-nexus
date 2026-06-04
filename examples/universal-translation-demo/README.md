@@ -39,6 +39,8 @@ npm.cmd install
 npm.cmd run vercel-demo
 ```
 
+The `vercel-demo` script builds the local TypeScript SDK package before running so a fresh clone does not need preexisting `dist/` files.
+
 Inspect:
 
 ```powershell

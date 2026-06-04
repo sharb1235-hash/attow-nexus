@@ -26,7 +26,7 @@
 ## Docker
 
 - [x] `docker compose down -v` completed.
-- [x] `docker rm -f nexus` completed.
+- [x] Legacy `docker rm -f nexus` cleanup completed when an older global `container_name` container was present.
 - [x] `docker compose up --build -d` completed.
 - [x] `/api/health` returned `status: ok`.
 - [x] `/metrics` returned counters.

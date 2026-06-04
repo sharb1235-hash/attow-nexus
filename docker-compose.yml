@@ -2,7 +2,6 @@
   nexus:
     build: .
     image: nexus-nexus:latest
-    container_name: nexus
     environment:
       NEXUS_BIND_MODE: tcp
       NEXUS_REQUIRE_AUTH: "false"

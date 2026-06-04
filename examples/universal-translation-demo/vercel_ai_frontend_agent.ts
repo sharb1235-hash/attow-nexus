@@ -1,5 +1,5 @@
-import { NexusClient } from "../../sdks/typescript/src/client";
-import { instrumentGenerateText, instrumentStreamText } from "../../sdks/typescript/src/adapters/vercel-ai";
+import { NexusClient } from "@nexus-ipc/sdk";
+import { instrumentGenerateText, instrumentStreamText } from "@nexus-ipc/sdk/adapters/vercel-ai";
 
 const runId = "universal-demo";
 const threadId = "main";

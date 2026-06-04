@@ -7,6 +7,7 @@ Use this checklist before making the Attow Nexus GitHub repository public.
 - [ ] Review [company-launch-checklist.md](company-launch-checklist.md) for Attow, Inc. operational readiness.
 - [ ] Run the private CI verification commands in [private-ci-verification.md](private-ci-verification.md).
 - [ ] Run a clean clone test.
+- [ ] Run or review [cold-run-launch-verification.md](cold-run-launch-verification.md).
 - [ ] Confirm Docker Compose starts.
 - [ ] Confirm `/api/health` works.
 - [ ] Confirm `/metrics` works.

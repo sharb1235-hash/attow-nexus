@@ -59,7 +59,7 @@ Passed:
 - `cd dashboard; npm.cmd run test:routes`
 - `cd dashboard; npm.cmd audit`
 - `docker compose down -v`
-- `docker rm -f nexus`
+- legacy `docker rm -f nexus` cleanup when an older global container existed
 - `docker compose up --build -d`
 - `curl.exe http://127.0.0.1:7822/api/health`
 - `curl.exe http://127.0.0.1:7823/metrics`
