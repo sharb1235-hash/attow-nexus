@@ -1,6 +1,6 @@
-# Launch Demo Assets
+# Demo Assets
 
-This directory contains committed launch media for the public developer-preview release.
+This directory contains committed demo media for Attow Nexus.
 
 Current output files:
 
@@ -11,9 +11,9 @@ Current output files:
 
 Do not commit fake or empty binary recordings. Regenerate assets locally when the product flow changes, then verify the rendered video before publishing.
 
-## Polished Remotion Launch Video
+## Polished Remotion Product Intro Video
 
-`docs/assets/attow-nexus-launch.mp4` is a scripted 60-second launch video built with Remotion. It is separate from the live captured product demo above: the Remotion video uses accurate generated terminal/dashboard visuals and launch copy for a clean public intro.
+`docs/assets/attow-nexus-launch.mp4` is a scripted 60-second product intro video built with Remotion. It is separate from the live captured product demo above: the Remotion video uses accurate generated terminal/dashboard visuals and product copy for a clean public intro.
 
 Regenerate it from the repository root with:
 

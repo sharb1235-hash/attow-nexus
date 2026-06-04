@@ -230,7 +230,7 @@ function assertFreshEnough(metrics) {
         "Demo recording expects either a fresh daemon with zero demo counters or an already-exact 2-commit demo state.",
         "Current metrics are not clean enough to create an honest 45-second demo.",
         "Restart with a clean Docker volume, then run docker compose up --build first.",
-        "Suggested reset for launch recording: docker compose down -v; docker compose up --build"
+        "Suggested reset for demo recording: docker compose down -v; docker compose up --build"
       ].join("\n")
     );
   }
@@ -573,7 +573,7 @@ function terminalSlide(title, command, text, chips = []) {
     <section class="slide">
       <div class="header">
         <div>
-          <p class="eyebrow">Launch demo</p>
+          <p class="eyebrow">Product demo</p>
           <h1>${escapeHtml(title)}</h1>
         </div>
         <div class="chips">${chips.map((chip) => `<span>${escapeHtml(chip)}</span>`).join("")}</div>

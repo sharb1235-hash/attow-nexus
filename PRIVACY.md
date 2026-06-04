@@ -7,25 +7,19 @@ Attow Nexus is a local-first developer tool. The local daemon, CLI, SDKs, dashbo
 - No daemon runtime telemetry is collected by Attow Nexus in v0.1.
 - No SDK runtime telemetry is collected.
 - No CLI telemetry is collected.
-- Local agent state, prompts, tool outputs, daemon commits, and SQLite ledger data remain on the user's machine unless the user chooses to share them.
-- The GitHub repository itself does not execute tracking scripts.
-
-## Public Web And Community Analytics
-
-Attow, Inc. may use analytics on public launch surfaces that are separate from the local runtime:
-
-- A public docs or landing site may use privacy-conscious analytics or visitor-identification tools such as Koala or RB2B.
-- Install links may use Scarf Gateway to measure open-source installation interest.
-- GitHub community activity such as stars, forks, issues, pull requests, discussions, and comments may be analyzed through Common Room.
-
-Any public docs or landing site that uses a pixel should disclose it. Tracking scripts must not be added to the local developer dashboard by default.
+- No local dashboard telemetry is collected.
+- Local agent state, prompts, tool outputs, daemon commits, artifacts, and SQLite ledger data remain on the user's machine unless the user chooses to share them.
+- Setup scripts do not install hidden telemetry.
+- The GitHub repository itself does not run remote telemetry scripts.
 
 ## Install Choices
 
-Users can use direct GitHub clone and setup commands if they prefer not to use Scarf-tracked install links. Scarf links, when offered, are optional and should have a direct GitHub/raw fallback.
-
-Review setup scripts before running remote shell commands, especially before piping a remote script into a shell.
+The recommended install path is to clone the repository and run the documented local setup commands. Review setup scripts before running remote shell commands, especially before piping a remote script into a shell.
 
 ## No Secrets In The Repository
 
-Tracking IDs, OAuth credentials, API keys, private tokens, passwords, and service secrets must not be committed to this repository. Use environment variables or service dashboards for account-specific configuration.
+API keys, private tokens, passwords, OAuth credentials, database URLs with passwords, private keys, and service secrets must not be committed to this repository. Use environment variables or local configuration files that are ignored by Git.
+
+## Remote Use
+
+Attow Nexus is designed to bind locally by default. If you change Docker, daemon, or network settings to expose the API outside localhost, review authentication, token handling, network access, and the sensitivity of captured logical state before doing so.

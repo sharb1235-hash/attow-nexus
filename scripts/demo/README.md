@@ -1,6 +1,6 @@
-# Attow Nexus Launch Demo Video
+# Attow Nexus Product Demo Video
 
-This directory contains the repeatable local pipeline for creating the Attow Nexus public launch demo video.
+This directory contains the repeatable local pipeline for creating the Attow Nexus product demo video.
 
 The script captures real local daemon output, CLI output, dashboard screenshots, and generated title/caption slides, then assembles them into:
 
@@ -77,7 +77,7 @@ If those counters already show the exact demo state, the script reuses that stat
 
 ## Outputs
 
-Raw captured files are written to `scripts/demo/out/` and ignored by Git. The final MP4/GIF files in `docs/assets/` are intentionally not ignored, so they can be committed when the real launch recording is ready.
+Raw captured files are written to `scripts/demo/out/` and ignored by Git. The final MP4/GIF files in `docs/assets/` are intentionally not ignored, so they can be committed when the generated demo recording is ready.
 
 ## Troubleshooting
 

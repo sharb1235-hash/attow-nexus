@@ -71,4 +71,4 @@ The script uses only local loopback endpoints:
 - `http://127.0.0.1:7822/api/checkpoint`
 - `http://127.0.0.1:7823/metrics`
 
-Raw results are printed to stdout and can be copied into `docs/audit/STRESS_TEST_REPORT.md`.
+Raw results are printed to stdout. Save run logs outside the repository or in a temporary local note when you need to compare machines or versions.

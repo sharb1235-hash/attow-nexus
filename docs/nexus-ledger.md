@@ -16,7 +16,7 @@ External side effects are logged as irreversible unless an adapter provides a co
 
 ## Broken Agent Recovery Demo
 
-The `examples/broken-agent-recovery` demo is the launch proof for "Git for AI agent state." It creates a local multi-agent commit graph:
+The `examples/broken-agent-recovery` demo shows "Git for AI agent state" with a local multi-agent commit graph:
 
 - `planner-agent` creates the last good plan commit.
 - `coder-agent` creates a bad config commit with `retry_limit: "five"`.

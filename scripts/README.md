@@ -1,6 +1,6 @@
 # Scripts
 
-Launch-day setup scripts live at the top of this directory:
+Setup scripts live at the top of this directory:
 
 - `setup.ps1` for Windows PowerShell.
 - `setup.sh` for macOS/Linux shells.

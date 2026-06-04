@@ -14,5 +14,9 @@
 
 ## Later
 
-- Hosted dashboard, team workspaces, cloud sync, long-term retention, RBAC, SSO/SAML, audit exports, production alerting, incident replay, enterprise support, and private deployment.
-
+- More SDK ergonomics for common agent workflows.
+- Broader adapter coverage through public hooks, callbacks, middleware, and explicit wrappers.
+- Richer replay and diff inspection in the console.
+- Local trusted-machine coordination patterns with clear security guidance.
+- Storage, artifact, and observability hardening for larger local runs.
+- Better documentation for safe rollback of captured logical state and irreversible side-effect logging.

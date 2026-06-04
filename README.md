@@ -56,7 +56,7 @@ The setup script checks the API and metrics, installs the local Python SDK in ed
 
 Docker Compose runs the daemon/API/metrics in Terminal 1. The dashboard runs separately through Vite dev mode from `dashboard/`.
 
-Attow Nexus does not collect daemon, CLI, SDK, or local dashboard runtime telemetry in v0.1. See [PRIVACY.md](PRIVACY.md) for the local-runtime privacy boundary and optional public launch analytics disclosure.
+Attow Nexus does not collect daemon, CLI, SDK, or local dashboard runtime telemetry in v0.1. See [PRIVACY.md](PRIVACY.md) for the local-runtime privacy boundary.
 
 ## Inspecting the Substrate Natively
 
@@ -299,23 +299,15 @@ TypeScript:
 npm install @nexus-ipc/sdk
 ```
 
-### Optional One-Line Installer
+### One-Line Setup Script
 
-The clone-based setup above is the primary quickstart. After the repository is public, Attow, Inc. may also offer an optional Scarf Gateway link for measuring open-source setup interest.
-
-macOS/Linux optional tracked link:
-
-```bash
-curl -fsSL <SCARF_SETUP_SH_URL> | bash
-```
-
-Direct GitHub fallback:
+The clone-based setup above is the primary quickstart. If you prefer a shell setup script on macOS/Linux, review the script first and then run it directly from GitHub:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/sharb1235-hash/attow-nexus/main/scripts/setup.sh | bash
 ```
 
-Review `scripts/setup.sh` before piping it into `bash`. On Windows, prefer the clone-based `.\scripts\setup.ps1` flow rather than remote PowerShell execution.
+On Windows, prefer the clone-based `.\scripts\setup.ps1` flow rather than remote PowerShell execution.
 
 ## Python Example
 
@@ -382,7 +374,7 @@ Open the URL printed by Vite. If port 5173 is already in use, Vite may choose an
 
 The captured local product demo is [docs/assets/nexus-demo.mp4](docs/assets/nexus-demo.mp4). A GIF version is also available at [docs/assets/nexus-demo.gif](docs/assets/nexus-demo.gif).
 
-The polished 60-second Remotion launch video is [docs/assets/attow-nexus-launch.mp4](docs/assets/attow-nexus-launch.mp4), with source in [scripts/remotion-launch-video](scripts/remotion-launch-video/README.md).
+The polished 60-second Remotion product intro video is [docs/assets/attow-nexus-launch.mp4](docs/assets/attow-nexus-launch.mp4), with source in [scripts/remotion-launch-video](scripts/remotion-launch-video/README.md).
 
 Regenerate the captured product demo locally with the repeatable script in [scripts/demo](scripts/demo/README.md):
 
@@ -403,7 +395,7 @@ Attow Nexus binds locally by default. TCP mode requires bearer token authenticat
 
 Remote binding requires `NEXUS_ALLOW_REMOTE=true` and should be paired with token management, network controls, and a deployment-specific security review.
 
-Privacy and attribution details are documented in [PRIVACY.md](PRIVACY.md). Public docs or landing pages may use disclosed marketing analytics, but the local runtime remains no-cloud and no-API-key by default.
+Privacy details are documented in [PRIVACY.md](PRIVACY.md). The local runtime remains no-cloud and no-API-key by default.
 
 ## Rollback Limitations
 
@@ -443,7 +435,7 @@ nexus bench local --events 10000 --payload-size 4096
 
 The benchmark reports p50/p95/p99 publish latency, durable checkpoint latency sampling, throughput, artifact throughput guidance, and memory usage pointers. The README intentionally avoids fixed latency claims until numbers are generated locally.
 
-## Launch Demo Story
+## Demo Flow
 
 1. Three framework surfaces publish to one local run.
 2. NexusLedger records durable commits with explicit parent links.
@@ -453,15 +445,9 @@ The benchmark reports p50/p95/p99 publish latency, durable checkpoint latency sa
 6. The workflow resumes from a recovery commit.
 7. Attow Nexus Console shows the local daemon, channels, commits, and metrics through Vite dev mode.
 
-## Public Launch
+## Roadmap
 
-Keep the GitHub repository private until CI is green. Use [docs/public-launch-checklist.md](docs/public-launch-checklist.md), [docs/clean-clone-test.md](docs/clean-clone-test.md), and [docs/company-launch-checklist.md](docs/company-launch-checklist.md) before switching visibility to public.
-
-Launch attribution setup is documented in [docs/launch-analytics-setup.md](docs/launch-analytics-setup.md), [docs/scarf-setup.md](docs/scarf-setup.md), [docs/web-pixel-setup.md](docs/web-pixel-setup.md), and [docs/common-room-setup.md](docs/common-room-setup.md). Tracking is optional, disclosed, and must not be added to the local daemon, CLI, SDKs, or dashboard runtime.
-
-## Cloud Roadmap
-
-The open-source project is local-first. Future paid offerings may include hosted dashboards, team workspaces, cloud sync, long-term retention, RBAC, SSO/SAML, audit exports, production alerting, incident replay, enterprise support, private deployment, and SOC2-oriented logs.
+Attow Nexus is local-first developer infrastructure. Near-term roadmap work focuses on SDK ergonomics, public wrapper adapters, replay/diff UX, dashboard polish, storage and observability hardening, local trusted-machine coordination, and clearer docs for safe use with captured logical state. See [ROADMAP.md](ROADMAP.md).
 
 ## Contributing
 

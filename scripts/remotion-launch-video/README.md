@@ -1,6 +1,6 @@
-# Attow Nexus Remotion Launch Video
+# Attow Nexus Remotion Product Intro Video
 
-Scriptable Remotion source for the 60-second Attow Nexus developer launch video.
+Scriptable Remotion source for the 60-second Attow Nexus developer product intro video.
 
 ## Render
 
