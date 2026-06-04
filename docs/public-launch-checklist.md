@@ -14,10 +14,12 @@ Use this checklist before making the Attow Nexus GitHub repository public.
 - [ ] Confirm the setup scripts require no API keys and run the universal demo by default.
 - [ ] Confirm Python demo works if using the `-Basic` / `--basic` fallback path.
 - [ ] Confirm CLI `status`, `agents`, `channels`, and `log` work.
+- [ ] Confirm Broken Agent Recovery demo and smoke script work.
 - [ ] Confirm dashboard opens from Vite.
 - [ ] Confirm the README quickstart still says Docker runs daemon/API/metrics and the dashboard runs separately from Vite.
-- [ ] Record demo GIF/MP4.
+- [ ] Verify committed demo MP4/GIF assets render correctly.
 - [ ] Review README for overclaims.
+- [ ] Confirm SECURITY.md has a real disclosure path or GitHub private vulnerability reporting enabled.
 - [ ] Confirm MCP bridge, local cluster mode, Windows named pipe transport, RocksDB store, framework adapters, OpenTelemetry, and encryption-at-rest are labeled experimental or unverified where applicable.
 - [ ] Only then switch repo visibility to public.
 - [ ] Create the `v0.1.0` release.

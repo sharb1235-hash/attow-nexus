@@ -6,7 +6,9 @@ Security updates are provided for the latest minor release. During the pre-1.0 p
 
 ## Reporting a Vulnerability
 
-Report vulnerabilities to `security@example.com`. Include the affected version, operating system, reproduction steps, and whether a secret or external side effect was involved.
+Use GitHub private vulnerability reporting for `sharb1235-hash/attow-nexus` while the project is in developer preview. Include the affected version, operating system, reproduction steps, and whether a secret or external side effect was involved.
+
+If Attow later designates a security inbox, add it here before advertising email-based disclosure.
 
 ## Local-Only Defaults
 

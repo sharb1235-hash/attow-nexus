@@ -74,7 +74,8 @@ async function main() {
     console.log("Auth smoke passed: health public, protected API rejects missing/wrong tokens, direct API and CLI accept correct token.");
   } finally {
     killProcessTree(daemon);
-    await fs.rm(dataDir, { recursive: true, force: true });
+    await waitForProcessExit(daemon);
+    await rmWithRetry(dataDir);
   }
 
   if (daemon.exitCode && daemon.exitCode !== 0 && !output.includes("listening")) {
@@ -132,4 +133,31 @@ function killProcessTree(child) {
   } else {
     child.kill("SIGTERM");
   }
+}
+
+function waitForProcessExit(child) {
+  if (child.exitCode !== null || child.signalCode !== null) {
+    return Promise.resolve();
+  }
+  return new Promise((resolve) => {
+    const timeout = setTimeout(resolve, 5000);
+    child.once("exit", () => {
+      clearTimeout(timeout);
+      resolve();
+    });
+  });
+}
+
+async function rmWithRetry(target) {
+  let lastError;
+  for (let attempt = 0; attempt < 8; attempt += 1) {
+    try {
+      await fs.rm(target, { recursive: true, force: true, maxRetries: 3, retryDelay: 250 });
+      return;
+    } catch (error) {
+      lastError = error;
+      await new Promise((resolve) => setTimeout(resolve, 250 * (attempt + 1)));
+    }
+  }
+  throw lastError;
 }

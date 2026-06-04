@@ -10,7 +10,7 @@
 - [x] Local TypeScript SDK build/tests passed.
 - [x] Python/TypeScript universal fixture parity tests passed.
 - [x] Rust daemon universal event ingestion/validation tests passed.
-- [ ] `node scripts\audit\contract-smoke.mjs` passed against a fresh Docker daemon.
+- [x] `node scripts\audit\contract-smoke.mjs` passed against a fresh Docker daemon.
 - [x] Dashboard npm audit reviewed/fixed; `npm.cmd audit` reports zero vulnerabilities.
 - [x] TypeScript SDK npm audit reviewed/fixed; `npm.cmd audit` reports zero vulnerabilities.
 - [ ] `cargo audit` run in CI or locally.
@@ -37,9 +37,10 @@
 - [x] Python SDK editable install passed.
 - [x] Python SDK tests passed.
 - [x] Python demo created two commits.
-- [ ] `py examples\broken-agent-recovery\run_demo.py` passed against a fresh Docker daemon.
-- [ ] `node scripts\audit\broken-agent-demo-smoke.mjs` passed against a fresh Docker daemon.
-- [ ] `.\scripts\setup.ps1 -NoDashboard` passed against a fresh Docker daemon.
+- [x] `py examples\broken-agent-recovery\run_demo.py` passed against a fresh Docker daemon.
+- [x] `node scripts\audit\broken-agent-demo-smoke.mjs` passed against a fresh Docker daemon.
+- [x] `powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\setup.ps1 -NoDashboard` passed against a fresh Docker daemon.
+- [ ] Direct `.\scripts\setup.ps1 -NoDashboard` depends on local PowerShell execution policy; blocked on this workstation.
 - [ ] `./scripts/setup.sh --no-dashboard` passed against a fresh Docker daemon on macOS/Linux or CI.
 - [x] TypeScript SDK install/build/test passed.
 - [x] TypeScript basic example ran against daemon.
@@ -54,6 +55,7 @@
 - [x] `cargo run -p nexus -- log --run demo-run` passed.
 - [x] `cargo run -p nexus -- diff <commit_a> <commit_b>` passed.
 - [x] `cargo run -p nexus -- replay <commit_b>` passed.
+- [x] `node scripts\audit\cli-smoke.mjs` passed.
 
 ## Dashboard
 
@@ -84,6 +86,7 @@
 - [x] MP4 is non-empty.
 - [x] MP4 duration verified as 45 seconds.
 - [x] Demo pipeline ran successfully.
+- [x] Dashboard scene preview shows populated Console panels with no broken image boxes.
 
 ## Security
 
@@ -91,7 +94,7 @@
 - [x] Redaction code and tests exist.
 - [x] Remote bind guard exists and is tested.
 - [x] npm audit findings resolved for dashboard and TypeScript SDK.
-- [ ] `cargo audit` unavailable locally.
+- [ ] `cargo audit` not run locally in this final pass; security workflow installs it.
 - [x] CI secret scanning added with gitleaks.
 - [ ] Remote use needs explicit review.
 

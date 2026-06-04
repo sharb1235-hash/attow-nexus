@@ -10,7 +10,9 @@
 
 Built by Attow as part of a local-first AI infrastructure stack.
 
-Not another agent framework - the shared state substrate underneath them.
+One local daemon, one ledger, one CLI, three framework surfaces feeding the same run.
+
+Not another agent framework - the shared state and debugging substrate underneath them.
 
 Nexus-IPC is a local coordination daemon for polyglot AI agents. NexusLedger is the Git-like state history built on top of it. Attow Nexus Console is the live debugger and dashboard. Together, they let agents share state in real time while giving developers replay, rollback, diffing, loop detection, and debugging for every important state transition.
 
@@ -126,24 +128,38 @@ Docker Compose starts the Attow Nexus daemon, HTTP API, and metrics endpoint. It
 - [x] Local daemon/API.
 - [x] Metrics endpoint.
 - [x] Docker Compose daemon run.
-- [x] Python SDK editable install.
-- [x] Python demo with two agents.
+- [x] Python SDK.
+- [x] TypeScript SDK.
 - [x] Durable commits.
-- [x] CLI `status`, `agents`, `channels`, and `log`.
+- [x] CLI `status`, `agents`, `channels`, `log`, `diff`, and `replay`.
 - [x] Dashboard dev UI.
 - [x] Basic commit display.
 - [x] Basic metrics display.
+- [x] Universal event schema.
+- [x] Python/TypeScript fixture parity.
+- [x] `/api/events` canonical ingestion.
+- [x] Universal translation demo.
+- [x] Broken Agent Recovery demo.
+- [x] LangGraph wrapper with a real no-LLM example.
+- [x] CrewAI-style wrapper verified with fake/public callback shape.
+- [x] Vercel AI SDK-style wrapper verified with fake `generateText`/`streamText`.
+- [x] Auth smoke script.
+- [x] CLI smoke script.
+- [x] Stress scripts.
+- [x] Demo video pipeline.
 
 ## What Is Experimental
 
-- Dashboard serving is separate in dev mode.
-- The Docker image currently runs the daemon/API, not a bundled production dashboard.
+- Production dashboard bundling in Docker.
 - Framework adapters are early and should use public hooks, callbacks, middleware, checkpointers, or explicit wrappers.
-- The MCP bridge is optional and experimental where enabled.
-- Local cluster mode is experimental where present.
-- Windows named pipe transport is represented by configuration and a documented TCP fallback; use loopback TCP on Windows for the current MVP.
-- RocksDB store support is feature-gated and not verified as a working alternative store in this launch pass.
-- OpenTelemetry and encryption-at-rest flags are configuration surfaces, not fully verified runtime systems in this MVP.
+- Deep framework-native checkpointer/store bridges.
+- MCP bridge.
+- Local cluster mode.
+- Windows named pipe transport.
+- RocksDB store.
+- OpenTelemetry.
+- Encryption-at-rest.
+- Production remote synchronization.
 - APIs may change before v1.0.
 - Security hardening is local-first/dev-first; remote use needs a deployment-specific review.
 - Cloud and team features are roadmap only.
@@ -344,11 +360,11 @@ Open the URL printed by Vite. If port 5173 is already in use, Vite may choose an
 
 ## Demo Assets
 
-The public launch demo should be recorded before the repo is made public. Use [docs/assets/nexus-demo.mp4](docs/assets/nexus-demo.mp4) and/or [docs/assets/nexus-demo.gif](docs/assets/nexus-demo.gif) for the final recording. The shot list lives in [docs/assets/README.md](docs/assets/README.md).
+The captured local product demo is [docs/assets/nexus-demo.mp4](docs/assets/nexus-demo.mp4). A GIF version is also available at [docs/assets/nexus-demo.gif](docs/assets/nexus-demo.gif).
 
 The polished 60-second Remotion launch video is [docs/assets/attow-nexus-launch.mp4](docs/assets/attow-nexus-launch.mp4), with source in [scripts/remotion-launch-video](scripts/remotion-launch-video/README.md).
 
-Generate the real MP4 locally with the repeatable script in [scripts/demo](scripts/demo/README.md):
+Regenerate the captured product demo locally with the repeatable script in [scripts/demo](scripts/demo/README.md):
 
 ```powershell
 cd <repo>
@@ -405,17 +421,15 @@ nexus bench local --events 10000 --payload-size 4096
 
 The benchmark reports p50/p95/p99 publish latency, durable checkpoint latency sampling, throughput, artifact throughput guidance, and memory usage pointers. The README intentionally avoids fixed latency claims until numbers are generated locally.
 
-## Demo Story
+## Launch Demo Story
 
-1. Agent A publishes a plan.
-2. Agent B receives the plan through Nexus-IPC.
-3. Agent B publishes research.
-4. Agent C receives research and drafts output.
-5. NexusLedger records durable commits.
-6. Attow Nexus Console shows the live Agent Bus.
-7. A repeated tool failure triggers a loop warning.
-8. A developer diffs the bad commit against the last stable commit.
-9. A developer forks from the stable commit and resumes from corrected state.
+1. Three framework surfaces publish to one local run.
+2. NexusLedger records durable commits with explicit parent links.
+3. A broken agent transition records invalid captured logical state.
+4. The developer diffs the bad commit against the last good commit.
+5. The developer replays the last good state.
+6. The workflow resumes from a recovery commit.
+7. Attow Nexus Console shows the local daemon, channels, commits, and metrics through Vite dev mode.
 
 ## Public Launch
 

@@ -1,15 +1,15 @@
 # Launch Demo Assets
 
-Place the final public launch recording in this directory before switching the repository to public visibility.
+This directory contains committed launch media for the public developer-preview release.
 
-Recommended output files:
+Current output files:
 
 - `docs/assets/nexus-demo.mp4`
 - `docs/assets/nexus-demo.gif`
 - `docs/assets/attow-nexus-launch.mp4`
 - `docs/assets/attow-nexus-launch-still.png`
 
-Do not commit a fake or empty binary recording. This placeholder exists so the README can link to the intended launch asset location while the repository is still private.
+Do not commit fake or empty binary recordings. Regenerate assets locally when the product flow changes, then verify the rendered video before publishing.
 
 ## Polished Remotion Launch Video
 
@@ -29,7 +29,7 @@ The render writes:
 - `docs/assets/attow-nexus-launch.mp4`
 - `docs/assets/attow-nexus-launch-still.png`
 
-## Generate the Recording
+## Regenerate the Captured Product Demo
 
 Use the scripted pipeline in `scripts/demo`:
 
@@ -42,7 +42,7 @@ cd ..\..
 npm.cmd --prefix scripts/demo run demo
 ```
 
-The script writes the MP4 to `docs/assets/nexus-demo.mp4`. To also write a GIF:
+The script writes the MP4 to `docs/assets/nexus-demo.mp4`. To also write or refresh the GIF:
 
 ```powershell
 npm.cmd --prefix scripts/demo run demo:gif

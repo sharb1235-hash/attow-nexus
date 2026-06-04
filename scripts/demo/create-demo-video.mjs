@@ -323,7 +323,7 @@ async function findDashboardUrl() {
     try {
       const response = await fetch(url, { signal: AbortSignal.timeout(500) });
       const text = await response.text();
-      if (response.ok && text.includes("root")) {
+      if (response.ok && text.includes("Attow Nexus Console")) {
         return url;
       }
     } catch {

@@ -51,6 +51,11 @@
    - Added daemon `/api/events` validation and Rust tests for ingestion/replay/redaction/malformed fixtures.
    - Added `scripts/audit/contract-smoke.mjs` for runtime fixture replay against a live daemon.
 
+9. **Add flagship broken-agent recovery proof.** - DONE
+   - `examples/broken-agent-recovery` demonstrates a deterministic bad state transition, diff, replay, recovery commit, and final validation pass.
+   - `scripts/audit/broken-agent-demo-smoke.mjs` verifies the demo and CLI output against a live daemon.
+   - Docs explicitly state replay/recovery apply to captured logical state and do not undo external side effects.
+
 ## P2 Shortly After Public Launch
 
 1. Add CLI unit/snapshot tests.
